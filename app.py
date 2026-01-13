@@ -1,97 +1,113 @@
 import streamlit as st
 import pandas as pd
+from datetime import datetime, timedelta
 
-# --- PAGE SETUP ---
-st.set_page_config(
-    page_title="NSE Authentic News Scanner",
-    layout="wide",
-    page_icon="📈"
-)
+# --- CONFIG ---
+st.set_page_config(page_title="NSE Smart Scanner", layout="wide", page_icon="📊")
 
-# --- TITLE & STYLE ---
-st.title("📈 NSE Authentic News & Contract Scanner")
+# Custom CSS for Green/Red styling
 st.markdown("""
 <style>
-    .reportview-container {
-        background: #f0f2f6
-    }
-    .big-font {
-        font-size:20px !important;
-        font-weight: bold;
-    }
+    .positive { color: #0f5132; background-color: #d1e7dd; padding: 5px; border-radius: 5px; font-weight: bold; }
+    .negative { color: #842029; background-color: #f8d7da; padding: 5px; border-radius: 5px; font-weight: bold; }
+    .big-money { font-size: 1.1em; font-weight: bold; color: #2c3e50; }
 </style>
 """, unsafe_allow_html=True)
 
-st.write("This tool scans **official NSE Corporate Filings** for keywords (Contracts, Orders, LoA) and **Bulk Deals**.")
+st.title("📊 NSE Actionable Market Scanner")
 
 # --- LOAD DATA ---
 try:
     df = pd.read_csv("nse_data.csv")
-    df['Date'] = pd.to_datetime(df['Date'], dayfirst=True)
-    df = df.sort_values(by='Date', ascending=False)
-except FileNotFoundError:
-    st.warning("No data found yet. Please wait for the daily scan to run.")
-    df = pd.DataFrame(columns=['Date', 'Symbol', 'Type', 'Description', 'Source', 'Sentiment'])
+    # Convert Date column to datetime objects for filtering
+    # NSE dates usually come as 'DD-Mon-YYYY' or ISO. We handle standard parsing.
+    df['Date'] = pd.to_datetime(df['Date'], dayfirst=True, errors='coerce')
+except:
+    st.error("No data found. Run the scanner first.")
+    st.stop()
 
-# --- SIDEBAR SEARCH ---
-st.sidebar.header("🔍 Filter Options")
+# --- SIDEBAR CONTROLS ---
+st.sidebar.header("🔍 Filters")
 
-# Search by Symbol
-symbol_list = ['All'] + sorted(df['Symbol'].unique().tolist())
-selected_symbol = st.sidebar.selectbox("Select Stock Symbol", symbol_list)
+# 1. TIME PERIOD
+time_filter = st.sidebar.radio(
+    "Select Time Period", 
+    ["Last 24 Hours", "Last 7 Days", "Last 30 Days", "All Time"]
+)
 
-# Search by Type
-type_list = ['All'] + sorted(df['Type'].unique().tolist())
-selected_type = st.sidebar.selectbox("Select News Type", type_list)
+# 2. SENTIMENT
+sentiment_filter = st.sidebar.multiselect(
+    "Impact Type",
+    ["Positive", "Negative", "Neutral"],
+    default=["Positive", "Negative"]
+)
 
-# Search by Keyword
-search_query = st.sidebar.text_input("Search keywords (e.g., 'Solar', 'Defense')")
+# 3. MINIMUM DEAL VALUE
+min_val = st.sidebar.slider("Minimum Deal Value (Cr)", 0, 5000, 0, step=10)
 
 # --- FILTERING LOGIC ---
-filtered_df = df.copy()
+today = datetime.now()
 
-if selected_symbol != 'All':
-    filtered_df = filtered_df[filtered_df['Symbol'] == selected_symbol]
+if time_filter == "Last 24 Hours":
+    start_date = today - timedelta(days=1)
+elif time_filter == "Last 7 Days":
+    start_date = today - timedelta(days=7)
+elif time_filter == "Last 30 Days":
+    start_date = today - timedelta(days=30)
+else:
+    start_date = df['Date'].min()
 
-if selected_type != 'All':
-    filtered_df = filtered_df[filtered_df['Type'] == selected_type]
+# Apply Filters
+mask = (
+    (df['Date'] >= start_date) & 
+    (df['Sentiment'].isin(sentiment_filter)) &
+    (df['Value_Cr'] >= min_val)
+)
+filtered_df = df.loc[mask].copy()
 
-if search_query:
-    filtered_df = filtered_df[filtered_df['Description'].str.contains(search_query, case=False, na=False)]
+# Sort by Value (Highest First)
+filtered_df = filtered_df.sort_values(by=['Value_Cr', 'Date'], ascending=[False, False])
 
-# --- MAIN DISPLAY ---
+# --- DASHBOARD ---
 
-# Metrics Row
+# Top metrics
 col1, col2, col3 = st.columns(3)
-col1.metric("Total News Found", len(filtered_df))
-col2.metric("Contract/Order News", len(filtered_df[filtered_df['Type'] == 'Contract/Order News']))
-col3.metric("Bulk Deals (Buy)", len(filtered_df[filtered_df['Type'] == 'Bulk Deal (BUY)']))
+col1.metric("Opportunities Found", len(filtered_df))
+col2.metric("Highest Deal Value", f"₹ {filtered_df['Value_Cr'].max()} Cr" if not filtered_df.empty else "0")
+col3.metric("Positive vs Negative", 
+            f"{len(filtered_df[filtered_df['Sentiment']=='Positive'])} / {len(filtered_df[filtered_df['Sentiment']=='Negative'])}")
 
 st.divider()
 
-# Results Table
+# --- DISPLAY CARDS ---
 if not filtered_df.empty:
-    st.subheader("📋 Latest Findings")
-    
-    # Iterate to make it look like a news feed
-    for index, row in filtered_df.iterrows():
+    for _, row in filtered_df.iterrows():
+        # Define card color border based on sentiment
+        border_color = "green" if row['Sentiment'] == "Positive" else "red"
+        
         with st.container():
-            c1, c2 = st.columns([1, 4])
+            c1, c2, c3 = st.columns([1, 5, 2])
+            
             with c1:
-                st.info(f"**{row['Symbol']}**\n\n{row['Date'].strftime('%d-%b-%Y')}")
+                st.write(f"**{row['Symbol']}**")
+                st.caption(row['Date'].strftime('%d-%b'))
+            
             with c2:
-                if "Contract" in row['Type']:
-                    st.success(f"**{row['Type']}**")
-                else:
-                    st.warning(f"**{row['Type']}**")
+                # Headline with color coding
+                css_class = "positive" if row['Sentiment'] == "Positive" else "negative"
+                st.markdown(f'<span class="{css_class}">{row["Headline"]}</span>', unsafe_allow_html=True)
                 
-                st.write(f"**Details:** {row['Description']}")
-                st.caption(f"Source: {row['Source']}")
+                # Details expander
+                with st.expander("Read Details"):
+                    st.write(row['Details'])
+            
+            with c3:
+                # Deal Value Display
+                if row['Value_Cr'] > 0:
+                    st.markdown(f'<span class="big-money">₹ {row["Value_Cr"]} Cr</span>', unsafe_allow_html=True)
+                else:
+                    st.caption("Value not disclosed")
+                    
             st.markdown("---")
 else:
-    st.info("No news found matching your criteria.")
-
-# --- AUTO REFRESH NOTE ---
-st.sidebar.markdown("---")
-st.sidebar.caption("Data is auto-updated daily via GitHub Actions.")
-
+    st.info("No stocks match your filters. Try lowering the Deal Value or changing the date.")
