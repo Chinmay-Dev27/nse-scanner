@@ -6,7 +6,7 @@ import os
 import re
 import feedparser
 
-# --- CONFIG ---
+# --- CONFIGURATION ---
 DATA_FILE = "nse_data.csv"
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
@@ -14,35 +14,45 @@ HEADERS = {
 }
 
 def extract_deal_value(text):
-    """Robust extraction for 'Rs 654 Cr', '3.5 Mn', etc."""
+    """
+    Robust extraction for money formats:
+    - "Rs. 654.03 Crores" -> 654.03
+    - "Order worth 500 Cr" -> 500.0
+    - "3.5 Million" -> 0.35 (Converted to Cr)
+    """
     if not isinstance(text, str): return 0
     text = text.lower().replace(',', '')
     
-    # Match Cr/Crore (e.g., "Rs 500 Cr", "500.50 Crores")
+    # Pattern 1: Explicit Cr/Crore
     match_cr = re.search(r"(?:rs\.?|inr)?\s?(\d+(?:\.\d+)?)\s?(?:cr|crore)", text)
     if match_cr: return float(match_cr.group(1))
     
-    # Match Million (convert to Cr, e.g., "10 Million" -> 1 Cr)
+    # Pattern 2: Million (1 Million = 0.1 Crore)
     match_mn = re.search(r"(\d+(?:\.\d+)?)\s?(?:mn|million)", text)
     if match_mn: return round(float(match_mn.group(1)) * 0.1, 2)
     
     return 0
 
 def fetch_future_events():
-    """Fetches Google News for 'L1 Bidder' (Potential Wins)"""
+    """Fetches Google News for 'L1 Bidder' & 'In Talks' (Future/Rumors)"""
     print("Scanning Future Events...")
     events = []
     
-    # 1. GOOGLE NEWS "L1 BIDDER"
-    queries = ["company L1 bidder project India", "company lowest bidder order", "company in talks acquisition India"]
+    # Queries for "Potential" news that hasn't been filed yet
+    queries = [
+        "company L1 bidder project India", 
+        "company lowest bidder order", 
+        "company in talks acquisition India"
+    ]
+    
     for q in queries:
         try:
             url = f"https://news.google.com/rss/search?q={q.replace(' ','%20')}&hl=en-IN&gl=IN&ceid=IN:en"
             feed = feedparser.parse(url)
-            for entry in feed.entries[:5]: # Top 5 per query
+            for entry in feed.entries[:5]: # Top 5 results per query
                 events.append({
-                    'Date': date.today().strftime('%Y-%m-%d'),
-                    'Symbol': "POTENTIAL NEWS",
+                    'Date': date.today().strftime('%Y-%m-%d'), # Tagged as today's insight
+                    'Symbol': "POTENTIAL NEWS", # Placeholder until user reads headline
                     'Type': 'Future/Rumor',
                     'Headline': entry.title,
                     'Sentiment': 'Positive',
@@ -57,10 +67,10 @@ def fetch_future_events():
 def scan_market():
     all_data = []
 
-    # 1. BULK DEALS (FIXED COLUMN NAMES)
+    # 1. BULK DEALS (Robust Logic)
     print("Fetching Bulk Deals...")
     try:
-        # Look back 3 days to ensure valid range
+        # Use 3-day window to avoid "from_date == to_date" error
         end_date = date.today()
         start_date = end_date - timedelta(days=3)
         
@@ -68,26 +78,21 @@ def scan_market():
                                            to_date=end_date.strftime('%d-%m-%Y'))
         
         if bd is not None and not bd.empty:
-            # --- FIX: NORMALIZE COLUMN NAMES ---
-            # Remove extra spaces from headers
-            bd.columns = [c.strip() for c in bd.columns]
-            
-            # Rename NSE specific columns to our standard names
-            # NSE often returns: "Quantity Traded", "Trade Price / Wght. Avg. Price"
+            # --- CRITICAL FIX: Normalize Column Names ---
+            bd.columns = [c.strip() for c in bd.columns] # Remove spaces
             rename_map = {
                 'Quantity Traded': 'Quantity',
                 'Trade Price / Wght. Avg. Price': 'Trade Price'
             }
             bd.rename(columns=rename_map, inplace=True)
-            # -----------------------------------
+            # ---------------------------------------------
 
             for _, row in bd.iterrows():
-                # Check if columns exist before accessing
                 if 'Quantity' in row and 'Trade Price' in row:
                     try:
                         qty = float(str(row['Quantity']).replace(',', ''))
                         price = float(str(row['Trade Price']).replace(',', ''))
-                        val = (qty * price) / 10000000 # Convert to Crores
+                        val = (qty * price) / 10000000 # Convert to Cr
                         
                         all_data.append({
                             'Date': row['Date'],
@@ -98,10 +103,10 @@ def scan_market():
                             'Value_Cr': round(val, 2),
                             'Details': f"Client: {row['Client Name']} | Exchange: NSE"
                         })
-                    except ValueError:
-                        continue # Skip bad number formats
+                    except:
+                        continue
     except Exception as e:
-        print(f"Bulk Deal Error: {e}")
+        print(f"Bulk Deal Info: {e}")
 
     # 2. CORPORATE FILINGS (Official)
     print("Fetching Filings...")
@@ -119,9 +124,9 @@ def scan_market():
                 desc = (str(item.get('desc','')) + " " + str(item.get('attchmntText',''))).lower()
                 val = extract_deal_value(desc)
                 
-                # Filter: Keep if Money > 0 OR key words present
+                # Filter: Keep if Money > 0 OR keywords present
                 if val > 0 or any(x in desc for x in ['order', 'contract', 'bagged', 'bonus', 'acquisition', 'dividend']):
-                    # Determine Sentiment
+                    
                     sent = 'Neutral'
                     if any(x in desc for x in ['order', 'win', 'bagged', 'acquisition']): sent = 'Positive'
                     elif any(x in desc for x in ['penalty', 'fraud', 'default']): sent = 'Negative'
@@ -136,29 +141,32 @@ def scan_market():
                         'Details': desc[:500]
                     })
     except Exception as e:
-        print(f"Filing Error: {e}")
+        print(f"Filing Info: {e}")
 
     # 3. FUTURE EVENTS
     df_future = fetch_future_events()
     if not df_future.empty:
         all_data.extend(df_future.to_dict('records'))
 
-    # SAVE
+    # SAVE TO CSV
     if all_data:
         new_df = pd.DataFrame(all_data)
+        # Standardize Date Format
         new_df['Date'] = pd.to_datetime(new_df['Date'], dayfirst=True, errors='coerce')
         
         if os.path.exists(DATA_FILE):
             existing = pd.read_csv(DATA_FILE)
             existing['Date'] = pd.to_datetime(existing['Date'], errors='coerce')
+            
             combined = pd.concat([new_df, existing])
+            # Deduplicate
             combined = combined.drop_duplicates(subset=['Date', 'Symbol', 'Headline'])
             combined.to_csv(DATA_FILE, index=False)
         else:
             new_df.to_csv(DATA_FILE, index=False)
-        print(f"Scan Complete. Saved {len(new_df)} items.")
+        print(f"Success. Saved {len(new_df)} items.")
     else:
-        print("Scan Complete. No relevant news found.")
+        print("Scan complete. No new items.")
 
 if __name__ == "__main__":
     scan_market()
