@@ -5,6 +5,7 @@ from datetime import date, timedelta
 import os
 import re
 import feedparser
+import time
 
 # --- CONFIG ---
 DATA_FILE = "nse_data.csv"
@@ -13,26 +14,26 @@ HEADERS = {'User-Agent': 'Mozilla/5.0'}
 def extract_deal_value(text):
     if not isinstance(text, str): return 0
     text = text.lower().replace(',', '')
-    # Match Cr/Crore
     match_cr = re.search(r"(?:rs\.?|inr)?\s?(\d+(?:\.\d+)?)\s?(?:cr|crore)", text)
     if match_cr: return float(match_cr.group(1))
-    # Match Million (convert to Cr)
     match_mn = re.search(r"(\d+(?:\.\d+)?)\s?(?:mn|million)", text)
     if match_mn: return round(float(match_mn.group(1)) * 0.1, 2)
     return 0
 
 def clean_symbol(sym):
-    """Removes spaces and invalid chars to fix Yahoo Finance errors"""
     if not isinstance(sym, str): return "UNKNOWN"
     return sym.strip().replace(" ", "").upper()
 
 def fetch_future_events():
     print("Scanning Future Events...")
     events = []
+    # BROADENED QUERIES to ensure hits
     queries = [
         "company L1 bidder project India", 
         "company lowest bidder order", 
-        "company bag order contract India"
+        "company in talks acquisition India",
+        "company considering stake sale India",
+        "merger discussions India company"
     ]
     for q in queries:
         try:
@@ -51,38 +52,53 @@ def fetch_future_events():
         except: continue
     return pd.DataFrame(events)
 
-def scan_market():
-    all_data = []
-
-    # 1. BULK DEALS
-    print("Fetching Bulk Deals...")
-    try:
-        end_date = date.today()
-        start_date = end_date - timedelta(days=3)
-        bd = capital_market.bulk_deal_data(from_date=start_date.strftime('%d-%m-%Y'), 
-                                           to_date=end_date.strftime('%d-%m-%Y'))
-        if bd is not None and not bd.empty:
-            bd.columns = [c.strip() for c in bd.columns]
-            bd.rename(columns={'Quantity Traded': 'Quantity', 'Trade Price / Wght. Avg. Price': 'Trade Price'}, inplace=True)
+def fetch_bulk_deals_robust():
+    """Fetches Bulk Deals in small chunks to avoid API failure"""
+    print("Fetching Bulk Deals (Chunked)...")
+    all_deals = []
+    
+    # Scan last 10 days in 2-day chunks
+    for i in range(0, 10, 2):
+        try:
+            end = date.today() - timedelta(days=i)
+            start = end - timedelta(days=1)
             
-            for _, row in bd.iterrows():
-                if 'Quantity' in row:
-                    try:
+            bd = capital_market.bulk_deal_data(from_date=start.strftime('%d-%m-%Y'), 
+                                               to_date=end.strftime('%d-%m-%Y'))
+            
+            if bd is not None and not bd.empty:
+                bd.columns = [c.strip() for c in bd.columns]
+                bd.rename(columns={'Quantity Traded': 'Quantity', 'Trade Price / Wght. Avg. Price': 'Trade Price'}, inplace=True)
+                
+                for _, row in bd.iterrows():
+                    if 'Quantity' in row:
                         qty = float(str(row['Quantity']).replace(',', ''))
                         price = float(str(row['Trade Price']).replace(',', ''))
                         val = (qty * price) / 10000000
                         
-                        all_data.append({
+                        all_deals.append({
                             'Date': row['Date'], 
                             'Symbol': clean_symbol(row['Symbol']), 
                             'Type': 'Bulk Deal',
-                            'Headline': f"Bulk {row['Buy/Sell']}: {qty:.0f} sh @ {price}",
+                            'Headline': f"Bulk {row['Buy/Sell']}: {qty:,.0f} sh @ ₹{price:.2f}",
                             'Sentiment': 'Positive' if row['Buy/Sell']=='BUY' else 'Negative',
                             'Value_Cr': round(val, 2), 
                             'Details': f"Client: {row['Client Name']}"
                         })
-                    except: continue
-    except Exception as e: print(f"Bulk Deal Err: {e}")
+            time.sleep(1) # Polite delay
+        except Exception as e:
+            print(f"Chunk failed: {e}")
+            continue
+            
+    return pd.DataFrame(all_deals)
+
+def scan_market():
+    all_data = []
+
+    # 1. BULK DEALS (New Robust Function)
+    df_bd = fetch_bulk_deals_robust()
+    if not df_bd.empty:
+        all_data.extend(df_bd.to_dict('records'))
 
     # 2. OFFICIAL FILINGS
     print("Fetching Filings...")
