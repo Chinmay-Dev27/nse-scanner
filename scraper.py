@@ -57,10 +57,10 @@ def fetch_future_events():
 def scan_market():
     all_data = []
 
-    # 1. BULK DEALS (FIXED: Uses 3-day range to avoid 'from=to' error)
+    # 1. BULK DEALS (FIXED COLUMN NAMES)
     print("Fetching Bulk Deals...")
     try:
-        # Look back 3 days to ensure valid range and catch recent data
+        # Look back 3 days to ensure valid range
         end_date = date.today()
         start_date = end_date - timedelta(days=3)
         
@@ -68,23 +68,40 @@ def scan_market():
                                            to_date=end_date.strftime('%d-%m-%Y'))
         
         if bd is not None and not bd.empty:
+            # --- FIX: NORMALIZE COLUMN NAMES ---
+            # Remove extra spaces from headers
+            bd.columns = [c.strip() for c in bd.columns]
+            
+            # Rename NSE specific columns to our standard names
+            # NSE often returns: "Quantity Traded", "Trade Price / Wght. Avg. Price"
+            rename_map = {
+                'Quantity Traded': 'Quantity',
+                'Trade Price / Wght. Avg. Price': 'Trade Price'
+            }
+            bd.rename(columns=rename_map, inplace=True)
+            # -----------------------------------
+
             for _, row in bd.iterrows():
-                # Calculate Deal Value in Cr
-                qty = float(str(row['Quantity']).replace(',', ''))
-                price = float(str(row['Trade Price']).replace(',', ''))
-                val = (qty * price) / 10000000 # Convert to Crores
-                
-                all_data.append({
-                    'Date': row['Date'],
-                    'Symbol': row['Symbol'],
-                    'Type': 'Bulk Deal',
-                    'Headline': f"Bulk {row['Buy/Sell']}: {row['Quantity']} sh @ ₹{row['Trade Price']}",
-                    'Sentiment': 'Positive' if row['Buy/Sell']=='BUY' else 'Negative',
-                    'Value_Cr': round(val, 2),
-                    'Details': f"Client: {row['Client Name']} | Exchange: NSE"
-                })
+                # Check if columns exist before accessing
+                if 'Quantity' in row and 'Trade Price' in row:
+                    try:
+                        qty = float(str(row['Quantity']).replace(',', ''))
+                        price = float(str(row['Trade Price']).replace(',', ''))
+                        val = (qty * price) / 10000000 # Convert to Crores
+                        
+                        all_data.append({
+                            'Date': row['Date'],
+                            'Symbol': row['Symbol'],
+                            'Type': 'Bulk Deal',
+                            'Headline': f"Bulk {row['Buy/Sell']}: {row['Quantity']} sh @ ₹{row['Trade Price']}",
+                            'Sentiment': 'Positive' if row['Buy/Sell']=='BUY' else 'Negative',
+                            'Value_Cr': round(val, 2),
+                            'Details': f"Client: {row['Client Name']} | Exchange: NSE"
+                        })
+                    except ValueError:
+                        continue # Skip bad number formats
     except Exception as e:
-        print(f"Bulk Deal Error (Ignored): {e}")
+        print(f"Bulk Deal Error: {e}")
 
     # 2. CORPORATE FILINGS (Official)
     print("Fetching Filings...")
@@ -110,7 +127,7 @@ def scan_market():
                     elif any(x in desc for x in ['penalty', 'fraud', 'default']): sent = 'Negative'
 
                     all_data.append({
-                        'Date': item.get('an_dt'), # 2024-01-13
+                        'Date': item.get('an_dt'),
                         'Symbol': item.get('symbol'),
                         'Type': 'Official Filing',
                         'Headline': item.get('desc'),
@@ -129,14 +146,11 @@ def scan_market():
     # SAVE
     if all_data:
         new_df = pd.DataFrame(all_data)
-        # Ensure Date format is consistent for sorting
         new_df['Date'] = pd.to_datetime(new_df['Date'], dayfirst=True, errors='coerce')
         
         if os.path.exists(DATA_FILE):
             existing = pd.read_csv(DATA_FILE)
             existing['Date'] = pd.to_datetime(existing['Date'], errors='coerce')
-            
-            # Combine and remove duplicates
             combined = pd.concat([new_df, existing])
             combined = combined.drop_duplicates(subset=['Date', 'Symbol', 'Headline'])
             combined.to_csv(DATA_FILE, index=False)
