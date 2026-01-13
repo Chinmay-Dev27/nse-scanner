@@ -1,113 +1,154 @@
 import streamlit as st
 import pandas as pd
+import yfinance as yf
 from datetime import datetime, timedelta
 
-# --- CONFIG ---
-st.set_page_config(page_title="NSE Smart Scanner", layout="wide", page_icon="📊")
+# --- PAGE SETUP ---
+st.set_page_config(page_title="NSE Market Pulse", layout="wide", page_icon="📈")
 
-# Custom CSS for Green/Red styling
+# --- CUSTOM CSS FOR MODERN UI ---
 st.markdown("""
 <style>
-    .positive { color: #0f5132; background-color: #d1e7dd; padding: 5px; border-radius: 5px; font-weight: bold; }
-    .negative { color: #842029; background-color: #f8d7da; padding: 5px; border-radius: 5px; font-weight: bold; }
-    .big-money { font-size: 1.1em; font-weight: bold; color: #2c3e50; }
+    /* badges */
+    .badge-pos { background-color: #d1e7dd; color: #0f5132; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; }
+    .badge-neg { background-color: #f8d7da; color: #842029; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; }
+    .badge-neu { background-color: #e2e3e5; color: #41464b; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; }
+    
+    /* deal value typography */
+    .deal-value { font-size: 1.5rem; font-weight: 700; color: #2E86C1; }
+    .deal-label { font-size: 0.8rem; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+    
+    /* remove default chart margin */
+    .stChart { margin-top: -20px; }
 </style>
 """, unsafe_allow_html=True)
 
-st.title("📊 NSE Actionable Market Scanner")
+# --- CACHED FUNCTIONS (Speed Optimization) ---
+@st.cache_data(ttl=3600) # Cache price data for 1 hour
+def get_price_trend(symbol):
+    """Fetches last 7 days closing prices for sparkline chart."""
+    try:
+        # NSE symbols in Yahoo Finance need '.NS' suffix
+        ticker = f"{symbol}.NS"
+        stock = yf.Ticker(ticker)
+        # Fetch 10 days to ensure we get 7 trading days
+        hist = stock.history(period="10d")
+        return hist['Close'].tail(7)
+    except:
+        return None
 
-# --- LOAD DATA ---
-try:
-    df = pd.read_csv("nse_data.csv")
-    # Convert Date column to datetime objects for filtering
-    # NSE dates usually come as 'DD-Mon-YYYY' or ISO. We handle standard parsing.
-    df['Date'] = pd.to_datetime(df['Date'], dayfirst=True, errors='coerce')
-except:
-    st.error("No data found. Run the scanner first.")
-    st.stop()
+def load_data():
+    try:
+        df = pd.read_csv("nse_data.csv")
+        df['Date'] = pd.to_datetime(df['Date'], dayfirst=True, errors='coerce')
+        return df
+    except FileNotFoundError:
+        return pd.DataFrame()
 
-# --- SIDEBAR CONTROLS ---
-st.sidebar.header("🔍 Filters")
+# --- SIDEBAR FILTERS ---
+st.sidebar.title("🔍 Scanner Controls")
 
-# 1. TIME PERIOD
-time_filter = st.sidebar.radio(
-    "Select Time Period", 
-    ["Last 24 Hours", "Last 7 Days", "Last 30 Days", "All Time"]
+# 1. Precise Value Filter (Number Input > Slider)
+min_val = st.sidebar.number_input(
+    "Min Deal Value (Cr)", 
+    min_value=0.0, 
+    value=2.0, 
+    step=0.5,
+    help="Filter out small deals. Set to 0 to see everything."
 )
 
-# 2. SENTIMENT
-sentiment_filter = st.sidebar.multiselect(
-    "Impact Type",
-    ["Positive", "Negative", "Neutral"],
+# 2. Time Filter
+time_options = {"Today": 1, "Last 3 Days": 3, "Last Week": 7, "Last Month": 30}
+selected_time = st.sidebar.selectbox("Time Period", list(time_options.keys()), index=1)
+days_back = time_options[selected_time]
+
+# 3. Sentiment Filter
+selected_sentiment = st.sidebar.multiselect(
+    "Sentiment", 
+    ["Positive", "Negative", "Neutral"], 
     default=["Positive", "Negative"]
 )
 
-# 3. MINIMUM DEAL VALUE
-min_val = st.sidebar.slider("Minimum Deal Value (Cr)", 0, 5000, 0, step=10)
+# --- MAIN APP LOGIC ---
+st.title("📈 NSE Actionable Intelligence")
+st.caption("Real-time corporate filings & bulk deals with price context.")
 
-# --- FILTERING LOGIC ---
-today = datetime.now()
+df = load_data()
 
-if time_filter == "Last 24 Hours":
-    start_date = today - timedelta(days=1)
-elif time_filter == "Last 7 Days":
-    start_date = today - timedelta(days=7)
-elif time_filter == "Last 30 Days":
-    start_date = today - timedelta(days=30)
-else:
-    start_date = df['Date'].min()
+if df.empty:
+    st.info("⚠️ No data found. Please ensure the 'scanner.py' script has run successfully.")
+    st.stop()
 
-# Apply Filters
+# Filter Data
+cutoff_date = datetime.now() - timedelta(days=days_back)
 mask = (
-    (df['Date'] >= start_date) & 
-    (df['Sentiment'].isin(sentiment_filter)) &
+    (df['Date'] >= cutoff_date) & 
+    (df['Sentiment'].isin(selected_sentiment)) & 
     (df['Value_Cr'] >= min_val)
 )
 filtered_df = df.loc[mask].copy()
 
-# Sort by Value (Highest First)
-filtered_df = filtered_df.sort_values(by=['Value_Cr', 'Date'], ascending=[False, False])
+# Sort: Biggest deals first
+filtered_df = filtered_df.sort_values(by='Value_Cr', ascending=False)
 
-# --- DASHBOARD ---
-
-# Top metrics
-col1, col2, col3 = st.columns(3)
-col1.metric("Opportunities Found", len(filtered_df))
-col2.metric("Highest Deal Value", f"₹ {filtered_df['Value_Cr'].max()} Cr" if not filtered_df.empty else "0")
-col3.metric("Positive vs Negative", 
-            f"{len(filtered_df[filtered_df['Sentiment']=='Positive'])} / {len(filtered_df[filtered_df['Sentiment']=='Negative'])}")
+# Top Metrics
+m1, m2, m3 = st.columns(3)
+m1.metric("Deals Found", len(filtered_df))
+total_val = filtered_df['Value_Cr'].sum()
+m2.metric("Total Deal Value", f"₹ {total_val:,.0f} Cr")
+m3.metric("Top Sector", "Cap Goods (Est.)") # Placeholder for future sector logic
 
 st.divider()
 
 # --- DISPLAY CARDS ---
-if not filtered_df.empty:
-    for _, row in filtered_df.iterrows():
-        # Define card color border based on sentiment
-        border_color = "green" if row['Sentiment'] == "Positive" else "red"
-        
-        with st.container():
-            c1, c2, c3 = st.columns([1, 5, 2])
-            
+if filtered_df.empty:
+    st.warning("No stocks match your filters. Try lowering the deal value.")
+else:
+    for index, row in filtered_df.iterrows():
+        # Create a visual card container
+        with st.container(border=True):
+            # ROW 1: Header (Symbol + Badge)
+            c1, c2 = st.columns([3, 1])
             with c1:
-                st.write(f"**{row['Symbol']}**")
-                st.caption(row['Date'].strftime('%d-%b'))
-            
+                st.subheader(f"🏢 {row['Symbol']}")
+                st.caption(f"{row['Date'].strftime('%d %b %Y')} • {row['Source']}")
             with c2:
-                # Headline with color coding
-                css_class = "positive" if row['Sentiment'] == "Positive" else "negative"
-                st.markdown(f'<span class="{css_class}">{row["Headline"]}</span>', unsafe_allow_html=True)
-                
-                # Details expander
-                with st.expander("Read Details"):
-                    st.write(row['Details'])
+                # Badge Logic
+                s_color = "badge-pos" if row['Sentiment'] == "Positive" else "badge-neg" if row['Sentiment'] == "Negative" else "badge-neu"
+                st.markdown(f'<span class="{s_color}">{row["Sentiment"].upper()}</span>', unsafe_allow_html=True)
+
+            st.markdown("---")
+
+            # ROW 2: Content + Chart
+            col_details, col_chart = st.columns([2, 1])
             
-            with c3:
+            with col_details:
+                # Headline
+                st.markdown(f"**{row['Headline']}**")
+                
                 # Deal Value Display
                 if row['Value_Cr'] > 0:
-                    st.markdown(f'<span class="big-money">₹ {row["Value_Cr"]} Cr</span>', unsafe_allow_html=True)
-                else:
-                    st.caption("Value not disclosed")
+                    st.markdown(f"""
+                    <div style="margin-top:10px;">
+                        <span class="deal-label">Estimated Value</span><br>
+                        <span class="deal-value">₹ {row['Value_Cr']} Cr</span>
+                    </div>
+                    """, unsafe_allow_html=True)
+                
+                with st.expander("📄 Read Full Details"):
+                    st.write(row['Details'])
+
+            with col_chart:
+                # Price Trend Sparkline
+                st.caption("7-Day Price Trend")
+                chart_data = get_price_trend(row['Symbol'])
+                if chart_data is not None and not chart_data.empty:
+                    # Color line based on trend (Green if up, Red if down)
+                    start_p = chart_data.iloc[0]
+                    end_p = chart_data.iloc[-1]
+                    color = "#008000" if end_p >= start_p else "#FF0000"
                     
-            st.markdown("---")
-else:
-    st.info("No stocks match your filters. Try lowering the Deal Value or changing the date.")
+                    st.line_chart(chart_data, height=100, color=color)
+                else:
+                    st.caption("Chart unavail.")
+
