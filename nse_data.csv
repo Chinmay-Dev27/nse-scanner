@@ -1,80 +1,196 @@
-Date,Symbol,Type,Description,Source,Sentiment
-13-Jan-2026 23:50:51,RAILTEL,Contract/Order News,General Updates,NSE Corporate Filings,Positive
-13-Jan-2026 23:50:51,RAILTEL,Contract/Order News,General Updates,NSE Corporate Filings,Positive
-13-Jan-2026 23:50:51,RAILTEL,Contract/Order News,General Updates,NSE Corporate Filings,Positive
-13-Jan-2026 20:51:23,FSL,Contract/Order News,Acquisition,NSE Corporate Filings,Positive
-13-Jan-2026 20:30:08,INTERARCH,Contract/Order News,Bagging/Receiving of orders/contracts,NSE Corporate Filings,Positive
-13-Jan-2026 20:21:36,PAYTM,Contract/Order News,Acquisition,NSE Corporate Filings,Positive
-13-Jan-2026 20:07:00,REGAAL,Contract/Order News,Action(s) initiated or orders passed,NSE Corporate Filings,Positive
-13-Jan-2026 19:43:28,NLCINDIA,Contract/Order News,Press Release,NSE Corporate Filings,Positive
-13-Jan-2026 19:39:27,SAMMAANCAP,Contract/Order News,Updates,NSE Corporate Filings,Positive
-13-Jan-2026 19:02:45,MWL,Contract/Order News,Action(s) initiated or orders passed,NSE Corporate Filings,Positive
-13-Jan-2026 19:00:57,TRANSWORLD,Contract/Order News,Action(s) initiated or orders passed,NSE Corporate Filings,Positive
-13-Jan-2026 18:40:30,SARLAPOLY,Contract/Order News,Action(s) taken or orders passed,NSE Corporate Filings,Positive
-13-Jan-2026 17:46:53,CHEVIOT,Contract/Order News,General Updates,NSE Corporate Filings,Positive
-13-Jan-2026 17:41:43,CHEMPLASTS,Contract/Order News,Spurt in Volume,NSE Corporate Filings,Positive
-13-Jan-2026 17:41:35,ITI,Contract/Order News,Spurt in Volume,NSE Corporate Filings,Positive
-13-Jan-2026 17:33:19,THOMASCOOK,Contract/Order News,Press Release,NSE Corporate Filings,Positive
-13-Jan-2026 17:31:54,AUSOMENT,Contract/Order News,Price movement,NSE Corporate Filings,Positive
-13-Jan-2026 17:31:40,SGLTL,Contract/Order News,Action(s) initiated or orders passed,NSE Corporate Filings,Positive
-13-Jan-2026 17:07:13,HAPPYFORGE,Contract/Order News,Memorandum of Understanding/Agreements,NSE Corporate Filings,Positive
-13-Jan-2026 16:33:10,HCL-INSYS,Contract/Order News,Pendency of Litigation(s)/dispute(s) or the outcome impacting the Company,NSE Corporate Filings,Positive
-13-Jan-2026 16:22:08,ALKEM,Contract/Order News,Action(s) initiated or orders passed,NSE Corporate Filings,Positive
-13-Jan-2026 16:20:46,KSL,Contract/Order News,General Updates,NSE Corporate Filings,Positive
-13-Jan-2026 16:20:11,SCHAEFFLER,Contract/Order News,Disclosure under SEBI Takeover Regulations,NSE Corporate Filings,Positive
-13-Jan-2026 14:53:04,IFCI,Contract/Order News,Spurt in Volume,NSE Corporate Filings,Positive
-13-Jan-2026 14:24:52,VENTIVE,Contract/Order News,Acquisition,NSE Corporate Filings,Positive
-13-Jan-2026 13:35:26,JSLL,Contract/Order News,General Updates,NSE Corporate Filings,Positive
-13-Jan-2026 12:30:02,MOL,Contract/Order News,Acquisition,NSE Corporate Filings,Positive
-13-Jan-2026 11:25:26,ABINFRA,Contract/Order News,Awarding of order(s)/contract(s),NSE Corporate Filings,Positive
-13-Jan-2026 10:44:09,PURVA,Contract/Order News,Bagging/Receiving of orders/contracts,NSE Corporate Filings,Positive
-13-Jan-2026 09:43:10,EIFFL,Contract/Order News,Spurt in Volume,NSE Corporate Filings,Positive
-13-Jan-2026 09:34:50,LT,Contract/Order News,Bagging/Receiving of orders/contracts,NSE Corporate Filings,Positive
-13-Jan-2026 09:34:00,WABAG,Contract/Order News,Bagging/Receiving of orders/contracts,NSE Corporate Filings,Positive
-13-Jan-2026 09:33:43,MBEL,Contract/Order News,Bagging/Receiving of orders/contracts,NSE Corporate Filings,Positive
-13-Jan-2026 08:30:08,WABAG,Contract/Order News,Awarding of order(s)/contract(s),NSE Corporate Filings,Positive
-12-Jan-2026 20:59:47,RMDRIP,Contract/Order News,General Updates,NSE Corporate Filings,Positive
-12-Jan-2026 20:04:50,BHARTIARTL,Contract/Order News,Action(s) taken or orders passed,NSE Corporate Filings,Positive
-12-Jan-2026 19:57:55,KPIGREEN,Contract/Order News,Press Release,NSE Corporate Filings,Positive
-12-Jan-2026 19:44:31,KPEL,Contract/Order News,Press Release,NSE Corporate Filings,Positive
-12-Jan-2026 19:27:50,SICALLOG,Contract/Order News,Bagging/Receiving of orders/contracts,NSE Corporate Filings,Positive
-12-Jan-2026 19:27:37,REGAAL,Contract/Order News,Action(s) initiated or orders passed,NSE Corporate Filings,Positive
-12-Jan-2026 19:19:45,COALINDIA,Contract/Order News,Rumour Verification - Regulation 30(11),NSE Corporate Filings,Positive
-12-Jan-2026 19:14:20,MARINE,Contract/Order News,Memorandum of Understanding/Agreements,NSE Corporate Filings,Positive
-12-Jan-2026 18:55:51,KRN,Contract/Order News,Agreements,NSE Corporate Filings,Positive
-12-Jan-2026 18:54:15,KRN,Contract/Order News,General Updates,NSE Corporate Filings,Positive
-12-Jan-2026 18:26:39,IFCI,Contract/Order News,Spurt in Volume,NSE Corporate Filings,Positive
-12-Jan-2026 18:26:28,EIFFL,Contract/Order News,Spurt in Volume,NSE Corporate Filings,Positive
-12-Jan-2026 18:25:27,GRPLTD,Contract/Order News,Acquisition,NSE Corporate Filings,Positive
-12-Jan-2026 18:10:54,ANSALAPI,Contract/Order News,Corporate Insolvency Resolution Process,NSE Corporate Filings,Positive
-12-Jan-2026 17:51:37,KRYSTAL,Contract/Order News,Press Release,NSE Corporate Filings,Positive
-12-Jan-2026 16:32:34,SOLEX,Contract/Order News,Bagging/Receiving of orders/contracts,NSE Corporate Filings,Positive
-12-Jan-2026 16:18:41,TAJGVK,Contract/Order News,Action(s) initiated or orders passed,NSE Corporate Filings,Positive
-12-Jan-2026 16:15:40,SRM,Contract/Order News,"Certificate under SEBI (Depositories and Participants) Regulations, 2018",NSE Corporate Filings,Positive
-12-Jan-2026 15:55:52,TCS,Contract/Order News,Press Release,NSE Corporate Filings,Positive
-12-Jan-2026 15:48:46,ASIANPAINT,Contract/Order News,Disclosure under SEBI Takeover Regulations,NSE Corporate Filings,Positive
-12-Jan-2026 15:38:12,NBCC,Contract/Order News,Updates,NSE Corporate Filings,Positive
-12-Jan-2026 15:33:03,INFY,Contract/Order News,Updates,NSE Corporate Filings,Positive
-12-Jan-2026 15:05:38,JTLIND,Contract/Order News,Bagging/Receiving of orders/contracts,NSE Corporate Filings,Positive
-12-Jan-2026 15:03:46,MAPMYINDIA,Contract/Order News,General Updates,NSE Corporate Filings,Positive
-12-Jan-2026 14:56:19,SOLEX,Contract/Order News,Bagging/Receiving of orders/contracts,NSE Corporate Filings,Positive
-12-Jan-2026 14:52:57,AARTIPHARM,Contract/Order News,Spurt in Volume,NSE Corporate Filings,Positive
-12-Jan-2026 14:49:26,LT,Contract/Order News,Updates,NSE Corporate Filings,Positive
-12-Jan-2026 14:12:26,SESHAPAPER,Contract/Order News,General Updates,NSE Corporate Filings,Positive
-12-Jan-2026 13:21:04,HARDWYN,Contract/Order News,Spurt in Volume,NSE Corporate Filings,Positive
-12-Jan-2026 12:21:49,KRYSTAL,Contract/Order News,Bagging/Receiving of orders/contracts,NSE Corporate Filings,Positive
-12-Jan-2026 12:19:22,KRYSTAL,Contract/Order News,Bagging/Receiving of orders/contracts,NSE Corporate Filings,Positive
-12-Jan-2026 12:16:25,KRYSTAL,Contract/Order News,Bagging/Receiving of orders/contracts,NSE Corporate Filings,Positive
-12-Jan-2026 12:05:38,IOC,Contract/Order News,Press Release,NSE Corporate Filings,Positive
-12-Jan-2026 11:32:35,SHAKTIPUMP,Contract/Order News,General Updates,NSE Corporate Filings,Positive
-12-Jan-2026 11:13:04,SHAKTIPUMP,Contract/Order News,General Updates,NSE Corporate Filings,Positive
-12-Jan-2026 10:47:59,MANINDS,Contract/Order News,Press Release,NSE Corporate Filings,Positive
-12-Jan-2026 10:45:01,ASIANENE,Contract/Order News,Spurt in Volume,NSE Corporate Filings,Positive
-12-Jan-2026 10:02:42,MARUTI,Contract/Order News,Capacity addition,NSE Corporate Filings,Positive
-12-Jan-2026 09:58:23,YASHO,Contract/Order News,Spurt in Volume,NSE Corporate Filings,Positive
-12-Jan-2026 09:47:51,AHLADA,Contract/Order News,Price movement,NSE Corporate Filings,Positive
-12-Jan-2026 09:39:05,IZMO,Contract/Order News,Press Release,NSE Corporate Filings,Positive
-12-Jan-2026 08:56:11,MANINDS,Contract/Order News,Bagging/Receiving of orders/contracts,NSE Corporate Filings,Positive
-12-Jan-2026 08:35:43,SHAKTIPUMP,Contract/Order News,Bagging/Receiving of orders/contracts,NSE Corporate Filings,Positive
-11-Jan-2026 12:37:17,RANEHOLDIN,Contract/Order News,Action(s) taken or orders passed,NSE Corporate Filings,Positive
-11-Jan-2026 10:20:31,BETA,Contract/Order News,General Updates,NSE Corporate Filings,Positive
+Date,Symbol,Type,Headline,Sentiment,Value_Cr,Details,Description,Source
+13-Jan-2026 23:50:51,RAILTEL,Corporate Action,General Updates,Positive,0.0,General Updates Railtel Corporation Of India Limited has informed the Exchange about Cancellation of an Order...,,
+13-Jan-2026 20:51:23,FSL,Corporate Action,Acquisition,Positive,0.0,Acquisition Firstsource Solutions Limited has informed the Exchange about Acquisition...,,
+13-Jan-2026 20:30:08,INTERARCH,Corporate Action,Bagging/Receiving of orders/contracts,Positive,0.0,Bagging/Receiving of orders/contracts Interarch Building Solutions Limited has informed the Exchange about Bagging/Receiving of orders/contracts...,,
+13-Jan-2026 20:21:36,PAYTM,Corporate Action,Acquisition,Positive,0.0,"Acquisition One 97 Communications Limited has informed the Exchange about Disclosure under Regulation 30 of the SEBI (Listing Obligations and Disclosure Requirements) Regulations, 2015- Updates on Acquisition...",,
+13-Jan-2026 20:07:00,REGAAL,Corporate Action,Action(s) initiated or orders passed,Positive,0.0,Action(s) initiated or orders passed Regaal Resources Limited has informed the Exchange about Action(s) initiated or orders passed...,,
+13-Jan-2026 19:28:26,NITCO,Corporate Action,Resignation,Negative,0.0,"Resignation Nitco Limited has informed the Exchange regarding Resignation of  Mr. Sitanshu Satapathy as Chief Financial Officer of the company w.e.f. January 13, 2026....",,
+13-Jan-2026 19:27:46,IVP,Corporate Action,Frauds/Default by employees,Negative,0.0,Frauds/Default by employees IVP Limited has informed the Exchange about Frauds/Default by an employee...,,
+13-Jan-2026 19:02:45,MWL,Corporate Action,Action(s) initiated or orders passed,Positive,0.0,"Action(s) initiated or orders passed Mangalam Worldwide Limited has informed the Stock Exchange about a favourable order passed in favour of the Company, whereby the order passed by the Assistant Commissioner of Central Goods and Services Tax has been set aside....",,
+13-Jan-2026 19:00:57,TRANSWORLD,Corporate Action,Action(s) initiated or orders passed,Positive,0.0,Action(s) initiated or orders passed TRANSWORLD SHIPPING LINES LIMITED has informed the Exchange about Action(s) initiated or orders passed...,,
+13-Jan-2026 18:40:30,SARLAPOLY,Corporate Action,Action(s) taken or orders passed,Positive,0.0,"Action(s) taken or orders passed Sarla Performance Fibers Limited has informed the Exchange about Disclosure Under Regulation 30 Of SEBI (Listing Obligations And Disclosure Requirements) Regulations, 2015 - Receipt Of Rectification Order Under Section 154 Of The Income-Tax Act, 1961 Along With A Not...",,
+13-Jan-2026 17:59:37,NLCINDIA,Corporate Action,Record Date,Positive,0.0,Record Date NLC India Limited has informed the Exchange that Record date for the purpose of Interim Dividend for FY 2025 - 26 is 20-Jan-2026....,,
+13-Jan-2026 17:46:53,CHEVIOT,Corporate Action,General Updates,Positive,0.0,General Updates Cheviot Company Limited has informed the Exchange about acquisition of shares....,,
+13-Jan-2026 17:41:43,CHEMPLASTS,Corporate Action,Spurt in Volume,Positive,0.0,"Spurt in Volume Significant increase in volume has been observed in Chemplast Sanmar Limited. The Exchange, in order to ensure that investors have latest relevant information about the company and to inform the market place so that the interest of the investors is safeguarded, has written to the com...",,
+13-Jan-2026 17:41:35,ITI,Corporate Action,Spurt in Volume,Positive,0.0,"Spurt in Volume Significant increase in volume has been observed in ITI Limited. The Exchange, in order to ensure that investors have latest relevant information about the company and to inform the market place so that the interest of the investors is safeguarded, has written to the company. The res...",,
+13-Jan-2026 17:33:19,THOMASCOOK,Corporate Action,Press Release,Positive,0.0,"Press Release Thomas Cook  (India)  Limited has informed the Exchange regarding a press release dated January 13, 2026, titled ""Thomas Cook India signs MOU with the Government of Gujarat - Strategic partnership to boost & promote Gujarat s domestic tourism""....",,
+13-Jan-2026 17:31:54,AUSOMENT,Corporate Action,Price movement,Positive,0.0,"Price movement Significant movement in price has been observed in Ausom Enterprise Limited. The Exchange, in order to ensure that investors have latest relevant information about the company and to inform the market place so that the interest of the investors is safeguarded, has written to the compa...",,
+13-Jan-2026 17:31:40,SGLTL,Corporate Action,Action(s) initiated or orders passed,Positive,0.0,Action(s) initiated or orders passed Standard Glass Lining Technology Limited has informed the Exchange about receipt of Assessment Order...,,
+13-Jan-2026 17:10:53,EKC,Corporate Action,Resignation,Negative,0.0,"Resignation EKC: Everest Kanto Cylinder Limited has informed the Exchange regarding Resignation of Mr Sanjay Patnaik- GM-Plant and Operations of the company w.e.f. January 12, 2026....",,
+13-Jan-2026 16:33:10,HCL-INSYS,Corporate Action,Pendency of Litigation(s)/dispute(s) or the outcome impacting the Company,Negative,0.0,"Pendency of Litigation(s)/dispute(s) or the outcome impacting the Company HCL Infosystems Limited is hereby informing the exchange about the order received by its wholly owned subsidiary, i.e. HCL Infotech Limited....",,
+13-Jan-2026 16:22:08,ALKEM,Corporate Action,Action(s) initiated or orders passed,Positive,0.0,Action(s) initiated or orders passed Alkem Laboratories Limited has informed the Exchange about Action(s) initiated or orders passed...,,
+13-Jan-2026 16:20:46,KSL,Corporate Action,General Updates,Positive,0.0,General Updates Regulation 30 of SEBI LODR-Update regarding acquisition of Subsidiary Shares...,,
+13-Jan-2026 16:20:11,SCHAEFFLER,Corporate Action,Disclosure under SEBI Takeover Regulations,Positive,0.0,"Disclosure under SEBI Takeover Regulations Schaeffler Schweinfurt Beteiligungs CmbH has Submitted to the Exchange a copy of Disclosure under Regulation 31(4) of the Securities and Exchange Board of India (Substantial Acquisition of Shares and Takeovers) Regulations, 2011....",,
+13-Jan-2026 15:58:12,RESPONIND,Corporate Action,Resignation,Negative,0.0,"Resignation Responsive Industries Limited has informed the Exchange regarding Resignation of Mr Bhavneet Singh Chadha as Chief Financial Officer of the company w.e.f. January 12, 2026....",,
+13-Jan-2026 15:39:09,MRPL,Corporate Action,Analysts/Institutional Investor Meet/Con. Call Updates,Negative,0.0,Analysts/Institutional Investor Meet/Con. Call Updates Mangalore Refinery and Petrochemicals Limited has informed the Exchange about Schedule of meet...,,
+13-Jan-2026 14:53:04,IFCI,Corporate Action,Spurt in Volume,Positive,0.0,"Spurt in Volume Significant increase in volume has been observed in IFCI Limited. The Exchange, in order to ensure that investors have latest relevant information about the company and to inform the market place so that the interest of the investors is safeguarded, had written to the company. IFCI L...",,
+13-Jan-2026 14:48:38,MAHABANK,Corporate Action,Record Date,Positive,0.0,Record Date Bank of Maharashtra has informed the Exchange that Record date for the purpose of Dividend  is 20-Jan-2026....,,
+13-Jan-2026 14:24:52,VENTIVE,Corporate Action,Acquisition,Positive,0.0,Acquisition Ventive Hospitality Limited has informed the Exchange about Acquisition...,,
+13-Jan-2026 14:18:21,MAHABANK,Corporate Action,Dividend,Positive,0.0,"Dividend Bank of Maharashtra has informed the Exchange that Board of Directors at its meeting held on January 13, 2026, declared Interim Dividend of Rs. 1.00 per equity share....",,
+13-Jan-2026 14:16:17,MAHABANK,Corporate Action,Outcome of Board Meeting,Positive,0.0,"Outcome of Board Meeting Bank of Maharashtra has submitted to the Exchange, the financial results for the period ended December 31, 2025 and Declared Interim Dividend...",,
+13-Jan-2026 13:00:42,KAKATCEM,Corporate Action,Loss of Share Certificates,Negative,0.0,Loss of Share Certificates Kakatiya Cement Sugar & Industries Limited has informed the Exchange about Loss of Share Certificates...,,
+13-Jan-2026 12:30:02,MOL,Corporate Action,Acquisition,Positive,0.0,Acquisition Meghmani Organics Limited has informed the Exchange about execution of share subscription and shareholders agreement for supply of renewable power....,,
+13-Jan-2026 11:51:15,IRFC,Corporate Action,Updates,Negative,0.0,Updates Indian Railway Finance Corporation Limited has informed the Exchange regarding 'Board Comments on fine levied by the Exchanges'....,,
+13-Jan-2026 11:25:26,ABINFRA,Corporate Action,Awarding of order(s)/contract(s),Positive,0.0,Awarding of order(s)/contract(s) A B Infrabuild Limited has informed the Exchange about Awarding of order(s)/contract(s)...,,
+13-Jan-2026 10:52:50,OMAXE,Corporate Action,Press Release,Neutral,500.0,"Press Release Omaxe Limited has informed the Exchange regarding a press release dated January 13, 2026, titled: ""Omaxe Invests Rs. 500 Crore in Ludhiana to launch Mixed-Use Omaxe Chowk Project""....",,
+13-Jan-2026 10:44:09,PURVA,Corporate Action,Bagging/Receiving of orders/contracts,Positive,0.0,Bagging/Receiving of orders/contracts Puravankara Limited has informed the Exchange about Receiving of Letter of Intent by Starworth Infrastructure & Construction Limited...,,
+13-Jan-2026 09:43:10,EIFFL,Corporate Action,Spurt in Volume,Positive,0.0,"Spurt in Volume Significant increase in volume has been observed in Euro India Fresh Foods Limited. The Exchange, in order to ensure that investors have latest relevant information about the company and to inform the market place so that the interest of the investors is safeguarded, had written to t...",,
+13-Jan-2026 09:34:50,LT,Corporate Action,Bagging/Receiving of orders/contracts,Positive,0.0,Bagging/Receiving of orders/contracts Larsen & Toubro Limited has informed the Exchange about Bagging/Receiving of orders/contracts...,,
+13-Jan-2026 09:34:00,WABAG,Corporate Action,Bagging/Receiving of orders/contracts,Positive,0.0,Bagging/Receiving of orders/contracts Bagging/Receiving of orders/contracts - WABAG secures a Large Order from BPCL towards Industrial Water Treatment Facilities...,,
+13-Jan-2026 09:33:43,MBEL,Corporate Action,Bagging/Receiving of orders/contracts,Positive,0.0,Bagging/Receiving of orders/contracts M & B Engineering Limited has informed the Exchange about Bagging/Receiving of orders/contracts...,,
+13-Jan-2026 08:30:08,WABAG,Corporate Action,Awarding of order(s)/contract(s),Positive,0.0,Awarding of order(s)/contract(s) WABAG secures a Large Order from BPCL towards Industrial Water Treatment Facilities...,,
+12-Jan-2026 23:28:42,HCLTECH,Corporate Action,Record Date,Positive,0.0,Record Date HCL Technologies Limited has informed the Exchange that Record date for the purpose of Dividend  is 17-Jan-2026....,,
+12-Jan-2026 23:19:37,ICICIGI,Corporate Action,Pendency of Litigation(s)/dispute(s) or the outcome impacting the Company,Negative,0.0,Pendency of Litigation(s)/dispute(s) or the outcome impacting the Company ICICI Lombard General Insurance Company Limited has informed the Exchange about Pendency of Litigation(s)/dispute(s) or the outcome impacting the Company...,,
+12-Jan-2026 21:33:13,TATASTEEL,Corporate Action,Pendency of Litigation(s)/dispute(s) or the outcome impacting the Company,Negative,0.0,"Pendency of Litigation(s)/dispute(s) or the outcome impacting the Company Tata Steel Limited has informed the exchange about the Disclosure under Regulations 30 and 51 of Securities and Exchange Board of India (Listing Obligations and Disclosure Requirements) Regulations, 2015...",,
+12-Jan-2026 20:59:47,RMDRIP,Corporate Action,General Updates,Positive,0.0,General Updates R M Drip and Sprinklers Systems Limited has informed the Exchange about proposed acquisition of Brahmanand Pipes Private Limited...,,
+12-Jan-2026 20:04:50,BHARTIARTL,Corporate Action,Action(s) taken or orders passed,Positive,0.0,Action(s) taken or orders passed Bharti Airtel Limited has informed the Exchange about Action(s) taken or orders passed...,,
+12-Jan-2026 19:57:55,KPIGREEN,Corporate Action,Press Release,Neutral,4000.0,"Press Release KPI Green Energy Limited has informed the Exchange regarding a press release dated January 12, 2026, titled ""KP Group Signs MoU with Government of Gujarat for Development of Renewable Energy Projects worth INR 4000 Cr""....",,
+12-Jan-2026 19:44:31,KPEL,Corporate Action,Press Release,Neutral,4000.0,"Press Release K.P. Energy Limited has informed the Exchange regarding a press release dated January 12, 2026, titled ""KP Group Signs MoU with Government of Gujarat for Development of Renewable Energy Projects worth INR 4000 Cr""....",,
+12-Jan-2026 19:27:50,SICALLOG,Corporate Action,Bagging/Receiving of orders/contracts,Positive,0.0,Bagging/Receiving of orders/contracts Sical Logistics Limited has informed the Exchange about receiving of contract...,,
+12-Jan-2026 19:27:37,REGAAL,Corporate Action,Action(s) initiated or orders passed,Positive,0.0,Action(s) initiated or orders passed Regaal Resources Limited has informed the Exchange about Action(s) initiated or orders passed...,,
+12-Jan-2026 18:55:51,KRN,Corporate Action,Agreements,Positive,0.0,"Agreements KRN Heat Exchanger and Refrigeration Limited has informed the Exchange about 1. Approved the Modification/Amendment in the loan agreement dated 15th April, 2023executed with KRN HVAC Products Private Limited ( KRN HVAC ) a wholly ownedsubsidiary Company of the Company. (Annexure I)2. Appr...",,
+12-Jan-2026 18:54:15,KRN,Corporate Action,General Updates,Positive,0.0,"General Updates KRN Heat Exchanger and Refrigeration Limited has informed the Exchange about1. Approved the Modification/Amendment in the loan agreement dated 15th April, 2023executed with KRN HVAC Products Private Limited ( KRN HVAC ) a wholly ownedsubsidiary Company of the Company. (Annexure I)2. ...",,
+12-Jan-2026 18:51:07,NLCINDIA,Corporate Action,Record Date,Positive,0.0,Record Date NLC India Limited has informed the Exchange that Record date for the purpose of Dividend  is 16-Jan-2026....,,
+12-Jan-2026 18:43:35,NLCINDIA,Corporate Action,Dividend,Positive,0.0,"Dividend NLC India Limited has informed the Exchange that Board of Directors at its meeting held on January 12, 2026, declared Interim Dividend of Rs. 3.6 per equity share....",,
+12-Jan-2026 18:26:39,IFCI,Corporate Action,Spurt in Volume,Positive,0.0,"Spurt in Volume Significant increase in volume has been observed in IFCI Limited. The Exchange, in order to ensure that investors have latest relevant information about the company and to inform the market place so that the interest of the investors is safeguarded, has written to the company. The re...",,
+12-Jan-2026 18:26:28,EIFFL,Corporate Action,Spurt in Volume,Positive,0.0,"Spurt in Volume Significant increase in volume has been observed in Euro India Fresh Foods Limited. The Exchange, in order to ensure that investors have latest relevant information about the company and to inform the market place so that the interest of the investors is safeguarded, has written to t...",,
+12-Jan-2026 18:25:27,GRPLTD,Corporate Action,Acquisition,Positive,0.0,Acquisition GRP Limited has informed the Exchange about Acquisition...,,
+12-Jan-2026 18:10:54,ANSALAPI,Corporate Action,Corporate Insolvency Resolution Process,Positive,0.0,"Corporate Insolvency Resolution Process The Company has informed the stock exchanges about the Hon'ble NCLAT order dated the 07th January, 2026....",,
+12-Jan-2026 18:06:48,PSPPROJECT,Corporate Action,Pendency of Litigation(s)/dispute(s) or the outcome impacting the Company,Negative,0.0,Pendency of Litigation(s)/dispute(s) or the outcome impacting the Company PSP Projects Limited has informed the Exchange about Pendency of Litigation(s)/dispute(s) or the outcome impacting the Company- Arbitration Award...,,
+12-Jan-2026 17:59:05,ARVIND,Corporate Action,Resignation,Negative,0.0,"Resignation Arvind Limited has informed the Exchange regarding Resignation of  Mr. Krunal Bhatt as Company Secretary & Compliance Officer of the company w.e.f. January 12, 2026....",,
+12-Jan-2026 17:57:54,SKFINDIA,Corporate Action,Resignation,Negative,0.0,"Resignation Pursuant to Regulation 30 of SEBI (Listing Obligations and Disclosure Requirements) Regulations, 2015 ( SEBI LODR ) read with clause 7 of Para A of Part A of Schedule III and other applicable provisions of SEBI LODR and the SEBI Master Circular No. SEBI/HO/CFD/PoD2/CIR/P/0155 dated 11th ...",,
+12-Jan-2026 17:51:37,KRYSTAL,Corporate Action,Press Release,Positive,0.0,"Press Release Krystal Integrated Services Limited has informed the Exchange regarding a press release dated January 12, 2026, titled ""Krystal Integrated Services secures multiple municipal sanitation contracts worth approx. 275 crores across Vasai Virar""....",,
+12-Jan-2026 17:50:42,UNOMINDA,Corporate Action,Updates,Negative,0.0,Updates UNO Minda Limited has informed the Exchange regarding 'Loss of Share certificate by a Shareholder'....,,
+12-Jan-2026 17:43:54,UNITDSPR,Corporate Action,Record Date,Positive,0.0,Record Date United Spirits Limited has informed the Exchange that Record date for the purpose of Dividend  is 27-Jan-2026....,,
+12-Jan-2026 17:43:52,SKFINDIA,Corporate Action,Resignation,Negative,0.0,"Resignation Pursuant to Regulation 30 of SEBI (Listing Obligations and Disclosure Requirements) Regulations, 2015 ( SEBI LODR ) read with clause 7 of Para A of Part A of Schedule III and other applicable provisions of SEBI LODR and the SEBI Master Circular No. SEBI/HO/CFD/PoD2/CIR/P/0155 dated 11th ...",,
+12-Jan-2026 17:41:33,IONEXCHANG,Corporate Action,Pendency of Litigation(s)/dispute(s) or the outcome impacting the Company,Negative,0.0,Pendency of Litigation(s)/dispute(s) or the outcome impacting the Company ION Exchange (India) Limited has informed the Exchange about Update on the Litigation matter...,,
+12-Jan-2026 17:35:54,SKFINDIA,Corporate Action,Resignation,Negative,0.0,"Resignation Pursuant to Regulation 30 of SEBI (Listing Obligations and Disclosure Requirements) Regulations, 2015 ( SEBI LODR ) read with clause 7 of Para A of Part A of Schedule III and other applicable provisions of SEBI LODR and the SEBI Master Circular No. SEBI/HO/CFD/PoD2/CIR/P/0155 dated 11th ...",,
+12-Jan-2026 17:24:12,HCLTECH,Corporate Action,Record Date,Positive,0.0,Record Date HCL Technologies Limited has informed the Exchange that Record date for the purpose of Dividend  is 16-Jan-2026....,,
+12-Jan-2026 17:12:02,HCLTECH,Corporate Action,Dividend,Positive,0.0,"Dividend HCL Technologies Limited has informed the Exchange that Board of Directors at its meeting held on January 12, 2026, declared Interim Dividend of Rs. 12 per equity share....",,
+12-Jan-2026 17:07:12,PREMIERPOL,Corporate Action,Resignation of Independent director,Negative,0.0,Resignation of Independent director PREMIER POLYFILM LIMITED has informed the Exchange about Resignation of Independent director....,,
+12-Jan-2026 16:37:45,NOVAAGRI,Corporate Action,Resignation of Independent director,Negative,0.0,Resignation of Independent director NOVA AGRITECH LIMITED has informed the Exchange about Resignation of Independent director....,,
+12-Jan-2026 16:32:34,SOLEX,Corporate Action,Bagging/Receiving of orders/contracts,Positive,0.0,"Bagging/Receiving of orders/contracts Solex Energy Limited has informed the Exchange about Revision in the earlier intimation dated January 12, 2026 for Bagging/Receiving of orders/contracts...",,
+12-Jan-2026 16:18:41,TAJGVK,Corporate Action,Action(s) initiated or orders passed,Positive,0.0,Action(s) initiated or orders passed Taj GVK Hotels & Resorts Limited has informed the Exchange about Action(s) initiated or orders passed...,,
+12-Jan-2026 16:15:40,SRM,Corporate Action,"Certificate under SEBI (Depositories and Participants) Regulations, 2018",Positive,0.0,"Certificate under SEBI (Depositories and Participants) Regulations, 2018 SRM Contractors Limited has informed the Exchange about Certificate under SEBI (Depositories and Participants) Regulations, 2018...",,
+12-Jan-2026 15:58:29,NOVAAGRI,Corporate Action,Resignation,Negative,0.0,"Resignation Nova Agritech Limited has informed the Exchange regarding Resignation of Mr Kiran Kumar Adapa as Non- Executive Independent Director of the company w.e.f. January 12, 2026....",,
+12-Jan-2026 15:57:20,TCS,Corporate Action,General Updates,Positive,0.0,General Updates Tata Consultancy Services Limited has informed the Exchange about Date of Payment of Dividend....,,
+12-Jan-2026 15:55:52,TCS,Corporate Action,Press Release,Positive,0.0,"Press Release Tata Consultancy Services Limited has informed the Exchange regarding a press release dated January 12, 2026, titled ""AI-led Growth and Strong Order Book highlight TCS  Q3""....",,
+12-Jan-2026 15:54:06,TCS,Corporate Action,Dividend,Positive,0.0,"Dividend Tata Consultancy Services Limited has informed the Exchange that Board of Directors at its meeting held on January 12, 2026, declared Special Dividend of Rs. 46 per equity share....",,
+12-Jan-2026 15:52:29,TCS,Corporate Action,Dividend,Positive,0.0,"Dividend Tata Consultancy Services Limited has informed the Exchange that Board of Directors at its meeting held on January 12, 2026, declared Interim Dividend of Rs. 11 per equity share....",,
+12-Jan-2026 15:48:46,ASIANPAINT,Corporate Action,Disclosure under SEBI Takeover Regulations,Positive,0.0,Disclosure under SEBI Takeover Regulations Shailesh Chimanlal Choksi Huf-Karta Jigish Shailesh Choksi has submitted to the Exchange a copy of Disclosures under Regulation 10(6)-Report to stock Exchange in respect of any acquisition made in reliance upon exemption provided for in regulation 10 of SEB...,,
+12-Jan-2026 15:33:03,INFY,Corporate Action,Updates,Positive,0.0,"Updates Infosys Limited has informed the Exchange regarding 'Infosys and ATP Unveil  Ally , an AI Chatbot to Elevate Fan Experience, and Announce Extension of Partnership Through 2028'....",,
+12-Jan-2026 15:05:38,JTLIND,Corporate Action,Bagging/Receiving of orders/contracts,Positive,0.0,Bagging/Receiving of orders/contracts JTL INDUSTRIES LIMITED has informed the Exchange about Bagging/Receiving of orders/contracts...,,
+12-Jan-2026 15:03:46,MAPMYINDIA,Corporate Action,General Updates,Positive,0.0,General Updates C.E. Info Systems Limited has informed the Exchange about acquisition of 3500 CCPS in IWAYPLUS Private Limited...,,
+12-Jan-2026 14:56:19,SOLEX,Corporate Action,Bagging/Receiving of orders/contracts,Positive,0.0,Bagging/Receiving of orders/contracts Solex Energy Limited has informed the Exchange about Bagging/Receiving of orders/contracts...,,
+12-Jan-2026 14:52:57,AARTIPHARM,Corporate Action,Spurt in Volume,Positive,0.0,"Spurt in Volume Significant increase in volume has been observed in Aarti Pharmalabs Limited. The Exchange, in order to ensure that investors have latest relevant information about the company and to inform the market place so that the interest of the investors is safeguarded, had written to the com...",,
+12-Jan-2026 14:49:26,LT,Corporate Action,Updates,Positive,0.0,Updates Larsen & Toubro Limited has informed the Exchange regarding 'Acquisition of stake held by JV Partner in L&T Sapura Shipping Private Limited'....,,
+12-Jan-2026 14:44:01,GRSE,Corporate Action,Copy of Newspaper Publication,Positive,0.0,"Copy of Newspaper Publication Pursuant to Regulation 30 of the SEBI (Listing Obligations and Disclosure Requirements) Regulations, 2015, we are submitting herewith newspaper clippings regarding notice for transfer of Unclaimed Dividends / Equity Shares to Investor Education and Protection Fund (IEPF...",,
+12-Jan-2026 14:12:26,SESHAPAPER,Corporate Action,General Updates,Negative,0.0,"General Updates Seshasayee Paper and Boards Limited has informed the Exchange about General Updates- The Company had filed an appeal with Commissioner (Appeals) and the Commissioner (Appeals) vide his latest Order had ruled the case, materially in favour of the Company with a reduced demand of Rs 16...",,
+12-Jan-2026 13:57:00,TEMBO,Corporate Action,Record Date,Positive,0.0,Record Date Tembo Global Industries Limited has informed the Exchange that Record date for the purpose of Dividend  is 16-Jan-2026....,,
+12-Jan-2026 13:21:04,HARDWYN,Corporate Action,Spurt in Volume,Positive,0.0,"Spurt in Volume Significant increase in volume has been observed in Hardwyn India Limited. The Exchange, in order to ensure that investors have latest relevant information about the company and to inform the market place so that the interest of the investors is safeguarded, had written to the compan...",,
+12-Jan-2026 12:21:49,KRYSTAL,Corporate Action,Bagging/Receiving of orders/contracts,Positive,0.0,Bagging/Receiving of orders/contracts Krystal Integrated Services Limited has informed the Exchange about Bagging/Receiving of orders/contracts...,,
+12-Jan-2026 12:19:22,KRYSTAL,Corporate Action,Bagging/Receiving of orders/contracts,Positive,0.0,Bagging/Receiving of orders/contracts Krystal Integrated Services Limited has informed the Exchange about Bagging/Receiving of orders/contracts...,,
+12-Jan-2026 12:16:25,KRYSTAL,Corporate Action,Bagging/Receiving of orders/contracts,Positive,0.0,Bagging/Receiving of orders/contracts Krystal Integrated Services Limited has informed the Exchange about Bagging/Receiving of orders/contracts...,,
+12-Jan-2026 11:39:04,PODDARHOUS,Corporate Action,Resignation of Independent director,Negative,0.0,Resignation of Independent director PODDAR HOUSING AND DEVELOPMENT LIMITED has informed the Exchange about Resignation of Independent director....,,
+12-Jan-2026 11:32:35,SHAKTIPUMP,Corporate Action,General Updates,Positive,0.0,General Updates Shakti Pumps (India) Limited has informed the Exchange about Press Release on Maiden Order received from Karnataka under the PM KUSUM B Scheme....,,
+12-Jan-2026 11:13:04,SHAKTIPUMP,Corporate Action,General Updates,Positive,0.0,General Updates Shakti Pumps (India) Limited has informed the Exchange about Press Release regarding Maiden Order received from Karnataka under the PM KUSUM B Scheme....,,
+12-Jan-2026 10:47:59,MANINDS,Corporate Action,Press Release,Positive,550.0,"Press Release Man Industries (India) Limited has informed the Exchange regarding a press release dated January 12, 2026, titled "":  Press Release / Media Release in respect of new Export Orders worth Rs.550 Crores.""....",,
+12-Jan-2026 10:45:01,ASIANENE,Corporate Action,Spurt in Volume,Positive,0.0,"Spurt in Volume Significant increase in volume has been observed in Asian Energy Services Limited. The Exchange, in order to ensure that investors have latest relevant information about the company and to inform the market place so that the interest of the investors is safeguarded, had written to th...",,
+12-Jan-2026 10:02:42,MARUTI,Corporate Action,Capacity addition,Positive,0.0,Capacity addition Maruti Suzuki India Limited has informed the Exchange about Board Approval for Land acquisition for Capacity Expansion...,,
+12-Jan-2026 09:58:23,YASHO,Corporate Action,Spurt in Volume,Positive,0.0,"Spurt in Volume Significant increase in volume has been observed in Yasho Industries Limited. The Exchange, in order to ensure that investors have latest relevant information about the company and to inform the market place so that the interest of the investors is safeguarded, had written to the com...",,
+12-Jan-2026 09:47:51,AHLADA,Corporate Action,Price movement,Positive,0.0,"Price movement Significant movement in price has been observed in Ahlada Engineers Limited. The Exchange, in order to ensure that investors have latest relevant information about the company and to inform the market place so that the interest of the investors is safeguarded, had written to the compa...",,
+12-Jan-2026 09:39:05,IZMO,Corporate Action,Press Release,Positive,0.0,"Press Release IZMO Limited has informed the Exchange regarding a press release dated January 12, 2026, titled ""izmo Ltd.  announced that its specialized division, izmo Microsystems, has successfully designed a highcomplexity 3D System-in-Package (SiP) module for Space Payload Camera Electronics.""....",,
+12-Jan-2026 08:56:11,MANINDS,Corporate Action,Bagging/Receiving of orders/contracts,Positive,0.0,Bagging/Receiving of orders/contracts Man Industries (India) Limited has informed the Exchange about Bagging/Receiving of orders/contracts...,,
+12-Jan-2026 08:35:43,SHAKTIPUMP,Corporate Action,Bagging/Receiving of orders/contracts,Positive,654.03,Bagging/Receiving of orders/contracts Shakti Pumps (India) Limited has informed the Exchange that Company has received 1st letter of Award from Karnataka Renewable Energy Development Limited for 16780 Standalone Off- Grid DC Solar Photovoltaic Water Pumping Systems (SPWPS) pumps under Component B of...,,
+11-Jan-2026 12:37:17,RANEHOLDIN,Corporate Action,Action(s) taken or orders passed,Positive,0.0,"Action(s) taken or orders passed Disclosure on Order received by the wholly owned subsidiary company - Rane Steering Systems Private Limited from Income Tax Authority, Chennai....",,
+11-Jan-2026 10:20:31,BETA,Corporate Action,General Updates,Positive,0.0,General Updates Beta Drugs Limited has informed the Exchange about submission of Revised Update -Acquisition of 66.09% Stake by Beta Drugs Limited in Nivian Lifesciences Private Limited....,,
+10-Jan-2026 22:01:50,SCHAND,Corporate Action,Acquisition,Positive,0.0,"Acquisition S Chand And Company Limited has informed the Exchange about Acquisition of 100% stake in CPD Singapore Education Services Pte. Limited by New Saraswati House (India) Private Limited, a Wholly Owned Material Subsidiary of the Company...",,
+10-Jan-2026 21:07:52,WAAREERTL,Corporate Action,Resignation,Negative,0.0,"Resignation Waaree Renewable Technologies Limited has informed the Exchange regarding Resignation of Mr Kamlesh Harchandani as Other of the company w.e.f. January 09, 2026....",,
+10-Jan-2026 18:45:36,BETA,Corporate Action,General Updates,Positive,0.0,General Updates Beta Drugs Limited has informed the Exchange about the acquisition of 66.09% stake in Nivian Lifesciences Private Limited....,,
+10-Jan-2026 17:29:19,SKFINDIA,Corporate Action,Change in Management,Negative,0.0,"Change in Management Pursuant to Regulation 30 of SEBI (Listing Obligations and Disclosure Requirements) Regulations, 2015 ( SEBI LODR ) read with clause 7 of Para A of Part A of Schedule III and other applicable provisions of SEBI LODR and the SEBI Master Circular No. SEBI/HO/CFD/PoD2/CIR/P/0155 da...",,
+10-Jan-2026 17:21:43,RML,Corporate Action,Pendency of Litigation(s)/dispute(s) or the outcome impacting the Company,Negative,0.0,"Pendency of Litigation(s)/dispute(s) or the outcome impacting the Company Disclosure on Show Cause Notice received from Principal Commissioner of Income Tax, Chennai....",,
+10-Jan-2026 16:18:10,PROTEAN,Corporate Action,General Updates,Positive,0.0,General Updates Protean eGov Technologies Limited has informed the Exchange about receipt of contract...,,
+10-Jan-2026 12:51:00,AMBIKCO,Corporate Action,Action(s) initiated or orders passed,Positive,0.0,"Action(s) initiated or orders passed Ambika Cotton Mills Limited has informed the Exchange about Action(s) initiated or orders passed -  Intimation under Regulation 30 of SEBI (LODR) Regulations, 2015...",,
+10-Jan-2026 12:10:56,JSWENERGY,Corporate Action,General Updates,Negative,0.0,"General Updates JSW Energy Limited has informed the Exchange about update on material litigation under Regulation 30(4) of the Securities Exchange Board of India (Listing Obligations and Disclosure Requirements) Regulations, 2015 (Listing Regulations)...",,
+10-Jan-2026 11:59:54,FCL,Corporate Action,"Certificate under SEBI (Depositories and Participants) Regulations, 2018",Negative,0.0,"Certificate under SEBI (Depositories and Participants) Regulations, 2018 Fineotex Chemical Limited has informed the Exchange about Certificate under SEBI (Depositories and Participants) Regulations, 2018 for the quarter ended December 31, 2025...",,
+10-Jan-2026 11:08:38,KERNEX,Corporate Action,Updates,Positive,0.0,Updates Kernex Microsystems (India) Limited has informed the Exchange regarding 'Update on CLW order'....,,
+10-Jan-2026 00:34:54,NIITMTS,Corporate Action,Press Release,Positive,0.0,"Press Release Niit Learning Systems Limited has informed the Exchange regarding a press release dated January 09, 2026, titled ""NIIT Learning Systems Limited (NIIT MTS) acquires SweetRush, Inc. to add award-winning strategic learning interventions and expand near-shore delivery capability in the Ame...",,
+10-Jan-2026 00:22:22,NIITMTS,Corporate Action,Outcome of Board Meeting,Positive,0.0,"Outcome of Board Meeting Please find intimation for acquisition by NIIT (USA) Inc., a wholly owned subsidiary of the Company by way of acquisition of 100% equity stake in SweetRush Inc....",,
+10-Jan-2026 00:20:52,NIITMTS,Corporate Action,General Updates,Positive,0.0,"General Updates Please find intimation for acquisition by NIIT (USA) Inc., a wholly owned subsidiary of the Company by way of acquisition of 100% equity stake in SweetRush Inc....",,
+13-Jan-2026 23:50:51,RAILTEL,Contract/Order News,,Positive,,,General Updates,NSE Corporate Filings
+13-Jan-2026 20:51:23,FSL,Contract/Order News,,Positive,,,Acquisition,NSE Corporate Filings
+13-Jan-2026 20:30:08,INTERARCH,Contract/Order News,,Positive,,,Bagging/Receiving of orders/contracts,NSE Corporate Filings
+13-Jan-2026 20:21:36,PAYTM,Contract/Order News,,Positive,,,Acquisition,NSE Corporate Filings
+13-Jan-2026 20:07:00,REGAAL,Contract/Order News,,Positive,,,Action(s) initiated or orders passed,NSE Corporate Filings
+13-Jan-2026 19:43:28,NLCINDIA,Contract/Order News,,Positive,,,Press Release,NSE Corporate Filings
+13-Jan-2026 19:39:27,SAMMAANCAP,Contract/Order News,,Positive,,,Updates,NSE Corporate Filings
+13-Jan-2026 19:02:45,MWL,Contract/Order News,,Positive,,,Action(s) initiated or orders passed,NSE Corporate Filings
+13-Jan-2026 19:00:57,TRANSWORLD,Contract/Order News,,Positive,,,Action(s) initiated or orders passed,NSE Corporate Filings
+13-Jan-2026 18:40:30,SARLAPOLY,Contract/Order News,,Positive,,,Action(s) taken or orders passed,NSE Corporate Filings
+13-Jan-2026 17:46:53,CHEVIOT,Contract/Order News,,Positive,,,General Updates,NSE Corporate Filings
+13-Jan-2026 17:41:43,CHEMPLASTS,Contract/Order News,,Positive,,,Spurt in Volume,NSE Corporate Filings
+13-Jan-2026 17:41:35,ITI,Contract/Order News,,Positive,,,Spurt in Volume,NSE Corporate Filings
+13-Jan-2026 17:33:19,THOMASCOOK,Contract/Order News,,Positive,,,Press Release,NSE Corporate Filings
+13-Jan-2026 17:31:54,AUSOMENT,Contract/Order News,,Positive,,,Price movement,NSE Corporate Filings
+13-Jan-2026 17:31:40,SGLTL,Contract/Order News,,Positive,,,Action(s) initiated or orders passed,NSE Corporate Filings
+13-Jan-2026 17:07:13,HAPPYFORGE,Contract/Order News,,Positive,,,Memorandum of Understanding/Agreements,NSE Corporate Filings
+13-Jan-2026 16:33:10,HCL-INSYS,Contract/Order News,,Positive,,,Pendency of Litigation(s)/dispute(s) or the outcome impacting the Company,NSE Corporate Filings
+13-Jan-2026 16:22:08,ALKEM,Contract/Order News,,Positive,,,Action(s) initiated or orders passed,NSE Corporate Filings
+13-Jan-2026 16:20:46,KSL,Contract/Order News,,Positive,,,General Updates,NSE Corporate Filings
+13-Jan-2026 16:20:11,SCHAEFFLER,Contract/Order News,,Positive,,,Disclosure under SEBI Takeover Regulations,NSE Corporate Filings
+13-Jan-2026 14:53:04,IFCI,Contract/Order News,,Positive,,,Spurt in Volume,NSE Corporate Filings
+13-Jan-2026 14:24:52,VENTIVE,Contract/Order News,,Positive,,,Acquisition,NSE Corporate Filings
+13-Jan-2026 13:35:26,JSLL,Contract/Order News,,Positive,,,General Updates,NSE Corporate Filings
+13-Jan-2026 12:30:02,MOL,Contract/Order News,,Positive,,,Acquisition,NSE Corporate Filings
+13-Jan-2026 11:25:26,ABINFRA,Contract/Order News,,Positive,,,Awarding of order(s)/contract(s),NSE Corporate Filings
+13-Jan-2026 10:44:09,PURVA,Contract/Order News,,Positive,,,Bagging/Receiving of orders/contracts,NSE Corporate Filings
+13-Jan-2026 09:43:10,EIFFL,Contract/Order News,,Positive,,,Spurt in Volume,NSE Corporate Filings
+13-Jan-2026 09:34:50,LT,Contract/Order News,,Positive,,,Bagging/Receiving of orders/contracts,NSE Corporate Filings
+13-Jan-2026 09:34:00,WABAG,Contract/Order News,,Positive,,,Bagging/Receiving of orders/contracts,NSE Corporate Filings
+13-Jan-2026 09:33:43,MBEL,Contract/Order News,,Positive,,,Bagging/Receiving of orders/contracts,NSE Corporate Filings
+13-Jan-2026 08:30:08,WABAG,Contract/Order News,,Positive,,,Awarding of order(s)/contract(s),NSE Corporate Filings
+12-Jan-2026 20:59:47,RMDRIP,Contract/Order News,,Positive,,,General Updates,NSE Corporate Filings
+12-Jan-2026 20:04:50,BHARTIARTL,Contract/Order News,,Positive,,,Action(s) taken or orders passed,NSE Corporate Filings
+12-Jan-2026 19:57:55,KPIGREEN,Contract/Order News,,Positive,,,Press Release,NSE Corporate Filings
+12-Jan-2026 19:44:31,KPEL,Contract/Order News,,Positive,,,Press Release,NSE Corporate Filings
+12-Jan-2026 19:27:50,SICALLOG,Contract/Order News,,Positive,,,Bagging/Receiving of orders/contracts,NSE Corporate Filings
+12-Jan-2026 19:27:37,REGAAL,Contract/Order News,,Positive,,,Action(s) initiated or orders passed,NSE Corporate Filings
+12-Jan-2026 19:19:45,COALINDIA,Contract/Order News,,Positive,,,Rumour Verification - Regulation 30(11),NSE Corporate Filings
+12-Jan-2026 19:14:20,MARINE,Contract/Order News,,Positive,,,Memorandum of Understanding/Agreements,NSE Corporate Filings
+12-Jan-2026 18:55:51,KRN,Contract/Order News,,Positive,,,Agreements,NSE Corporate Filings
+12-Jan-2026 18:54:15,KRN,Contract/Order News,,Positive,,,General Updates,NSE Corporate Filings
+12-Jan-2026 18:26:39,IFCI,Contract/Order News,,Positive,,,Spurt in Volume,NSE Corporate Filings
+12-Jan-2026 18:26:28,EIFFL,Contract/Order News,,Positive,,,Spurt in Volume,NSE Corporate Filings
+12-Jan-2026 18:25:27,GRPLTD,Contract/Order News,,Positive,,,Acquisition,NSE Corporate Filings
+12-Jan-2026 18:10:54,ANSALAPI,Contract/Order News,,Positive,,,Corporate Insolvency Resolution Process,NSE Corporate Filings
+12-Jan-2026 17:51:37,KRYSTAL,Contract/Order News,,Positive,,,Press Release,NSE Corporate Filings
+12-Jan-2026 16:32:34,SOLEX,Contract/Order News,,Positive,,,Bagging/Receiving of orders/contracts,NSE Corporate Filings
+12-Jan-2026 16:18:41,TAJGVK,Contract/Order News,,Positive,,,Action(s) initiated or orders passed,NSE Corporate Filings
+12-Jan-2026 16:15:40,SRM,Contract/Order News,,Positive,,,"Certificate under SEBI (Depositories and Participants) Regulations, 2018",NSE Corporate Filings
+12-Jan-2026 15:55:52,TCS,Contract/Order News,,Positive,,,Press Release,NSE Corporate Filings
+12-Jan-2026 15:48:46,ASIANPAINT,Contract/Order News,,Positive,,,Disclosure under SEBI Takeover Regulations,NSE Corporate Filings
+12-Jan-2026 15:38:12,NBCC,Contract/Order News,,Positive,,,Updates,NSE Corporate Filings
+12-Jan-2026 15:33:03,INFY,Contract/Order News,,Positive,,,Updates,NSE Corporate Filings
+12-Jan-2026 15:05:38,JTLIND,Contract/Order News,,Positive,,,Bagging/Receiving of orders/contracts,NSE Corporate Filings
+12-Jan-2026 15:03:46,MAPMYINDIA,Contract/Order News,,Positive,,,General Updates,NSE Corporate Filings
+12-Jan-2026 14:56:19,SOLEX,Contract/Order News,,Positive,,,Bagging/Receiving of orders/contracts,NSE Corporate Filings
+12-Jan-2026 14:52:57,AARTIPHARM,Contract/Order News,,Positive,,,Spurt in Volume,NSE Corporate Filings
+12-Jan-2026 14:49:26,LT,Contract/Order News,,Positive,,,Updates,NSE Corporate Filings
+12-Jan-2026 14:12:26,SESHAPAPER,Contract/Order News,,Positive,,,General Updates,NSE Corporate Filings
+12-Jan-2026 13:21:04,HARDWYN,Contract/Order News,,Positive,,,Spurt in Volume,NSE Corporate Filings
+12-Jan-2026 12:21:49,KRYSTAL,Contract/Order News,,Positive,,,Bagging/Receiving of orders/contracts,NSE Corporate Filings
+12-Jan-2026 12:19:22,KRYSTAL,Contract/Order News,,Positive,,,Bagging/Receiving of orders/contracts,NSE Corporate Filings
+12-Jan-2026 12:16:25,KRYSTAL,Contract/Order News,,Positive,,,Bagging/Receiving of orders/contracts,NSE Corporate Filings
+12-Jan-2026 12:05:38,IOC,Contract/Order News,,Positive,,,Press Release,NSE Corporate Filings
+12-Jan-2026 11:32:35,SHAKTIPUMP,Contract/Order News,,Positive,,,General Updates,NSE Corporate Filings
+12-Jan-2026 11:13:04,SHAKTIPUMP,Contract/Order News,,Positive,,,General Updates,NSE Corporate Filings
+12-Jan-2026 10:47:59,MANINDS,Contract/Order News,,Positive,,,Press Release,NSE Corporate Filings
+12-Jan-2026 10:45:01,ASIANENE,Contract/Order News,,Positive,,,Spurt in Volume,NSE Corporate Filings
+12-Jan-2026 10:02:42,MARUTI,Contract/Order News,,Positive,,,Capacity addition,NSE Corporate Filings
+12-Jan-2026 09:58:23,YASHO,Contract/Order News,,Positive,,,Spurt in Volume,NSE Corporate Filings
+12-Jan-2026 09:47:51,AHLADA,Contract/Order News,,Positive,,,Price movement,NSE Corporate Filings
+12-Jan-2026 09:39:05,IZMO,Contract/Order News,,Positive,,,Press Release,NSE Corporate Filings
+12-Jan-2026 08:56:11,MANINDS,Contract/Order News,,Positive,,,Bagging/Receiving of orders/contracts,NSE Corporate Filings
+12-Jan-2026 08:35:43,SHAKTIPUMP,Contract/Order News,,Positive,,,Bagging/Receiving of orders/contracts,NSE Corporate Filings
+11-Jan-2026 12:37:17,RANEHOLDIN,Contract/Order News,,Positive,,,Action(s) taken or orders passed,NSE Corporate Filings
+11-Jan-2026 10:20:31,BETA,Contract/Order News,,Positive,,,General Updates,NSE Corporate Filings
