@@ -2,5 +2,6 @@ pandas
 requests
 streamlit
 nselib
-openpyxl
 yfinance
+feedparser
+altair
