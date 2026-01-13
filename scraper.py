@@ -13,14 +13,16 @@ HEADERS = {'User-Agent': 'Mozilla/5.0'}
 def extract_deal_value(text):
     if not isinstance(text, str): return 0
     text = text.lower().replace(',', '')
+    # Match Cr/Crore
     match_cr = re.search(r"(?:rs\.?|inr)?\s?(\d+(?:\.\d+)?)\s?(?:cr|crore)", text)
     if match_cr: return float(match_cr.group(1))
+    # Match Million (convert to Cr)
     match_mn = re.search(r"(\d+(?:\.\d+)?)\s?(?:mn|million)", text)
     if match_mn: return round(float(match_mn.group(1)) * 0.1, 2)
     return 0
 
 def clean_symbol(sym):
-    """Removes spaces and invalid characters to fix Chart Loading errors"""
+    """Removes spaces and invalid chars to fix Yahoo Finance errors"""
     if not isinstance(sym, str): return "UNKNOWN"
     return sym.strip().replace(" ", "").upper()
 
