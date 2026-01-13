@@ -4,132 +4,152 @@ import yfinance as yf
 import altair as alt
 from datetime import datetime, timedelta
 
-# --- CONFIG ---
-st.set_page_config(page_title="InvestSmart Scanner", layout="wide", page_icon="💹")
+# --- PAGE SETUP ---
+st.set_page_config(page_title="Market Sniper", layout="wide", page_icon="🎯")
 
-# --- CUSTOM CSS ---
+# --- CSS FOR UI ---
 st.markdown("""
 <style>
-    .metric-card { background-color: #f0f2f6; padding: 15px; border-radius: 10px; border-left: 5px solid #2E86C1; }
-    .verdict-bull { color: #27ae60; font-weight: bold; font-size: 1.1em; }
-    .verdict-bear { color: #c0392b; font-weight: bold; font-size: 1.1em; }
-    .stExpander { border: none; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .big-price { font-size: 24px; font-weight: bold; color: #2c3e50; }
+    .trend-up { color: #27ae60; font-weight: bold; }
+    .trend-down { color: #c0392b; font-weight: bold; }
+    div[data-testid="stMetricValue"] { font-size: 1.2rem; }
 </style>
 """, unsafe_allow_html=True)
 
 # --- FUNCTIONS ---
 @st.cache_data(ttl=3600)
-def get_stock_data(symbol):
-    """Fetches data and calculates returns"""
-    if " " in symbol or len(symbol) > 15: return None # Skip generic news
+def get_stock_history(symbol):
+    """
+    Robust fetcher: Tries NSE first, handles failures gracefully.
+    Returns: DataFrame with history, Current Price, Percent Change
+    """
+    # Clean symbol (remove spaces, special chars if any)
+    clean_sym = symbol.replace('&', '').strip()
+    
     try:
-        ticker = yf.Ticker(f"{symbol}.NS")
-        # Get 1 month history to calculate trends
+        ticker = yf.Ticker(f"{clean_sym}.NS")
         hist = ticker.history(period="1mo")
-        if hist.empty: return None
-        return hist
+        
+        if hist.empty:
+            # Fallback: Try BSE? Or just return None
+            return None, 0, 0
+            
+        curr_price = hist['Close'].iloc[-1]
+        start_price = hist['Close'].iloc[0]
+        change_pct = ((curr_price - start_price) / start_price) * 100
+        
+        return hist, curr_price, change_pct
     except:
-        return None
+        return None, 0, 0
 
-def make_sparkline(hist_data):
-    """Creates a dynamic Altair chart scaled to Min/Max"""
+def plot_interactive_chart(hist_data):
+    """Altair chart with TOOLTIPS and AXES"""
+    if hist_data is None: return None
+    
     hist_data = hist_data.reset_index()
-    hist_data['Date'] = hist_data['Date'].dt.strftime('%d-%b')
     
-    # DYNAMIC SCALING: Set domain to strictly min and max of the data
-    min_p = hist_data['Close'].min() * 0.99
-    max_p = hist_data['Close'].max() * 1.01
-    
-    chart = alt.Chart(hist_data).mark_line(strokeWidth=2).encode(
-        x=alt.X('Date', axis=None), # Hide X axis for clean look
-        y=alt.Y('Close', scale=alt.Scale(domain=[min_p, max_p]), axis=None), # Dynamic Scale
-        color=alt.value("#2980b9") # Professional Blue
-    ).properties(height=60, width=150)
-    
-    return chart
+    # Base chart
+    base = alt.Chart(hist_data).encode(
+        x=alt.X('Date:T', axis=alt.Axis(format='%d-%b', title='')),
+        tooltip=['Date:T', alt.Tooltip('Close', format=',.2f')]
+    )
 
-# --- APP LAYOUT ---
-st.title("💹 Smart Investment Scanner")
-st.markdown("Automated intelligence from **NSE Filings** and **Tier-1 Financial News**.")
+    # Line
+    line = base.mark_line(color='#2962FF').encode(
+        y=alt.Y('Close:Q', scale=alt.Scale(zero=False), title='Price (₹)')
+    )
+    
+    return line.properties(height=200, width='container')
+
+# --- MAIN APP ---
+st.title("🎯 NSE Market Sniper")
 
 # LOAD DATA
 try:
     df = pd.read_csv("nse_data.csv")
-    df['Date'] = pd.to_datetime(df['Date'], dayfirst=True, errors='coerce')
-    df = df.sort_values(by=['Date', 'Value_Cr'], ascending=[False, False])
+    df['Date'] = pd.to_datetime(df['Date'])
 except:
-    st.error("Data not found. Please run the scanner.")
+    st.error("Data missing. Please run 'scraper.py' via GitHub Actions.")
     st.stop()
 
-# --- FILTERS ---
+# --- SIDEBAR FILTERS ---
 with st.sidebar:
-    st.header("🎯 Filter Opportunities")
-    min_deal = st.number_input("Min Deal Value (Cr)", value=0.0, step=10.0)
-    sentiment = st.multiselect("News Sentiment", ["Positive", "Negative"], default=["Positive"])
-    days = st.selectbox("Timeframe", ["Last 24h", "Last 3 Days", "Last 7 Days"], index=1)
+    st.header("⚙️ Scanner Settings")
+    
+    # 1. TIME FILTER
+    time_period = st.radio("Lookback Period", ["Last 24 Hours", "Last 7 Days", "Last 30 Days"])
+    
+    # 2. DEAL VALUE
+    show_all = st.checkbox("Show All (Include Small Deals)", value=True)
+    if not show_all:
+        min_val = st.slider("Min Deal Value (Cr)", 0, 5000, 50)
+    else:
+        min_val = 0
 
-# Apply Filters
-d_map = {"Last 24h": 1, "Last 3 Days": 3, "Last 7 Days": 7}
-start_date = datetime.now() - timedelta(days=d_map[days])
-filtered = df[
-    (df['Date'] >= start_date) & 
-    (df['Sentiment'].isin(sentiment)) & 
-    (df['Value_Cr'] >= min_deal)
-]
-
-# --- DISPLAY ---
-col_kpi1, col_kpi2 = st.columns(2)
-col_kpi1.metric("Deals Found", len(filtered))
-col_kpi2.metric("Avg Deal Value", f"₹ {int(filtered['Value_Cr'].mean()) if not filtered.empty else 0} Cr")
-
-st.divider()
-
-if filtered.empty:
-    st.info("No deals found matching your criteria.")
+# FILTER LOGIC
+today = datetime.now()
+if time_period == "Last 24 Hours":
+    start_date = today - timedelta(days=1)
+elif time_period == "Last 7 Days":
+    start_date = today - timedelta(days=7)
 else:
-    for _, row in filtered.iterrows():
-        # Fetch stock data for guidance
-        hist = get_stock_data(row['Symbol'])
-        
-        with st.container():
-            # LAYOUT: [ Info (4) | Verdict (2) | Chart (2) ]
-            c1, c2, c3 = st.columns([4, 2, 2])
-            
-            with c1:
-                st.subheader(row['Symbol'])
-                st.caption(f"📅 {row['Date'].strftime('%d %b')} | Source: {row['Type']}")
-                st.write(f"**{row['Headline']}**")
+    start_date = today - timedelta(days=30)
+
+filtered = df[(df['Date'] >= start_date) & (df['Value_Cr'] >= min_val)].copy()
+filtered = filtered.sort_values(by=['Value_Cr', 'Date'], ascending=[False, False])
+
+# --- TABS FOR PAST vs FUTURE ---
+tab_past, tab_future = st.tabs(["📢 Past News (Filings)", "🔮 Future Events (Board Meetings)"])
+
+with tab_past:
+    st.caption("Official NSE Announcements & Bulk Deals")
+    
+    if filtered.empty:
+        st.info("No news found for this period.")
+    else:
+        for idx, row in filtered.iterrows():
+            with st.container(border=True):
+                # HEADLINE ROW
+                c1, c2 = st.columns([3, 1])
+                c1.subheader(f"{row['Symbol']}")
                 if row['Value_Cr'] > 0:
-                    st.markdown(f"💰 **Value: ₹ {row['Value_Cr']} Cr**")
-
-            with c2:
-                # INVESTMENT GUIDANCE ENGINE
-                st.markdown("**Analyst Verdict:**")
-                if hist is not None:
-                    curr_price = hist['Close'].iloc[-1]
-                    wk_change = ((curr_price - hist['Close'].iloc[-7]) / hist['Close'].iloc[-7]) * 100
-                    
-                    # Logic: Good News + Uptrend = Strong Buy
-                    if row['Sentiment'] == "Positive":
-                        if wk_change > 0:
-                            st.markdown("🟢 <span class='verdict-bull'>Momentum Buy</span>", unsafe_allow_html=True)
-                            st.caption(f"Stock is UP {wk_change:.1f}% this week.")
-                        else:
-                            st.markdown("🟡 <span class='verdict-bull'>Value Pick?</span>", unsafe_allow_html=True)
-                            st.caption(f"Good news but stock down {wk_change:.1f}%.")
-                    else:
-                        st.markdown("🔴 <span class='verdict-bear'>Caution</span>", unsafe_allow_html=True)
-                else:
-                    st.caption("Market data unavailable")
-
-            with c3:
-                # ALTAIR SPARKLINE
-                if hist is not None:
-                    st.altair_chart(make_sparkline(hist.tail(15)), use_container_width=True)
-                else:
-                    st.write("No Chart")
-            
-            with st.expander("Show Details"):
-                st.write(row['Details'])
+                    c2.metric("Deal Value", f"₹ {row['Value_Cr']} Cr")
                 
-            st.divider()
+                # CONTENT ROW
+                col_info, col_chart = st.columns([1, 1])
+                
+                with col_info:
+                    st.write(f"**{row['Headline']}**")
+                    st.caption(f"📅 {row['Date'].strftime('%d %b %Y')} | Sentiment: {row['Sentiment']}")
+                    with st.expander("Details"):
+                        st.write(row['Details'])
+
+                with col_chart:
+                    # Fetch live data
+                    hist, price, chg = get_stock_history(row['Symbol'])
+                    
+                    if hist is not None:
+                        # Price + Trend Display
+                        color = "trend-up" if chg >= 0 else "trend-down"
+                        arrow = "🔼" if chg >= 0 else "🔻"
+                        st.markdown(f"<span class='big-price'>₹ {price:.2f}</span> <span class='{color}'>({arrow} {chg:.1f}%)</span>", unsafe_allow_html=True)
+                        
+                        # Render Chart
+                        st.altair_chart(plot_interactive_chart(hist), use_container_width=True)
+                    else:
+                        st.warning("⚠️ Market data unavailable for this ticker.")
+
+with tab_future:
+    st.caption("Upcoming Board Meetings & Agendas")
+    # Filter for future events
+    future_events = df[df['Type'] == 'Future Event']
+    
+    if future_events.empty:
+        st.info("No upcoming board meetings found.")
+    else:
+        st.dataframe(
+            future_events[['Date', 'Symbol', 'Headline']], 
+            use_container_width=True,
+            hide_index=True
+        )
