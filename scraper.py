@@ -5,125 +5,136 @@ from datetime import date, timedelta
 import os
 import re
 import feedparser
+import time
 
-# --- CONFIGURATION ---
+# --- CONFIG ---
 DATA_FILE = "nse_data.csv"
 
-# 1. OFFICIAL FILING KEYWORDS (Confirmed News)
-FILING_KEYWORDS = [
-    'order', 'contract', 'agreement', 'awarded', 'bagged', 'letter of acceptance', 
-    'loa', 'acquisition', 'bonus', 'dividend', 'buyback'
-]
-
-# 2. "UPCOMING" DEAL KEYWORDS (Soft News/Rumors)
-# "L1" = Lowest Bidder (Likely to win), "In talks" = Potential deal
-EXTERNAL_KEYWORDS = ['l1 bidder', 'lowest bidder', 'preferred bidder', 'in talks', 'considering proposal']
-
-# Trusted Domains (to filter out spam news)
-TRUSTED_DOMAINS = ['economictimes', 'moneycontrol', 'livemint', 'business-standard', 'financialexpress']
-
-def analyze_sentiment(text):
-    text = text.lower()
-    if any(k in text for k in ['penalty', 'fraud', 'default', 'resign', 'litigation']):
-        return "Negative"
-    if any(k in text for k in FILING_KEYWORDS + EXTERNAL_KEYWORDS):
-        return "Positive"
-    return "Neutral"
+HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+    'Referer': 'https://www.nseindia.com/'
+}
 
 def extract_deal_value(text):
-    # Extracts "Rs 500 Cr" or "500 Crore"
-    match = re.search(r"(?:rs\.?|inr)\s?(\d+(?:\.\d+)?)\s?(?:cr|crore|mn|million|bn|billion)", text.lower().replace(',', ''))
-    return float(match.group(1)) if match else 0
+    """
+    Robust extraction for formats like:
+    - "Rs. 654.03 Crores"
+    - "Order worth 500 Cr"
+    - "3.5 Million"
+    """
+    if not isinstance(text, str): return 0
+    text = text.lower().replace(',', '')
+    
+    # Pattern 1: Explicit "Cr" or "Crore"
+    # Matches: "rs 500 cr", "500.50 crores", "INR 500cr"
+    match_cr = re.search(r"(?:rs\.?|inr)?\s?(\d+(?:\.\d+)?)\s?(?:cr|crore)", text)
+    if match_cr:
+        return float(match_cr.group(1))
+        
+    # Pattern 2: "Million" (Convert to Cr: 1 Million = 0.1 Cr)
+    match_mn = re.search(r"(\d+(?:\.\d+)?)\s?(?:mn|million)", text)
+    if match_mn:
+        return round(float(match_mn.group(1)) * 0.1, 2)
+        
+    return 0
+
+def fetch_board_meetings():
+    """Fetches FUTURE events (Board Meetings)"""
+    print("Scanning Upcoming Board Meetings...")
+    try:
+        url = "https://www.nseindia.com/api/board-meetings"
+        session = requests.Session()
+        session.get("https://www.nseindia.com", headers=HEADERS)
+        response = session.get(url, headers=HEADERS)
+        
+        if response.status_code == 200:
+            data = response.json()
+            # Normalize data
+            rows = []
+            for item in data:
+                rows.append({
+                    'Date': item.get('meetingdate', date.today().strftime('%d-%b-%Y')), 
+                    'Symbol': item.get('symbol'),
+                    'Type': 'Future Event',
+                    'Headline': f"Board Meeting: {item.get('purpose')}",
+                    'Sentiment': 'Neutral', # Agenda determines sentiment, usually Neutral until outcome
+                    'Value_Cr': 0,
+                    'Details': f"Agenda: {item.get('purpose')}"
+                })
+            return pd.DataFrame(rows)
+    except Exception as e:
+        print(f"Board Meeting Error: {e}")
+    return pd.DataFrame()
 
 def fetch_corporate_announcements():
-    """Scrapes official NSE filings"""
-    print("Scanning NSE Official Filings...")
+    """Fetches PAST/PRESENT official filings"""
+    print("Scanning Corporate Filings...")
     try:
-        from_date = (date.today() - timedelta(days=2)).strftime('%d-%m-%Y')
+        # Fetch last 7 days to ensure we don't miss anything
+        from_date = (date.today() - timedelta(days=7)).strftime('%d-%m-%Y')
         to_date = date.today().strftime('%d-%m-%Y')
+        
         url = "https://www.nseindia.com/api/corporate-announcements"
-        headers = {'User-Agent': 'Mozilla/5.0', 'Referer': 'https://www.nseindia.com/'}
+        params = {'index': 'equities', 'from_date': from_date, 'to_date': to_date}
         
         session = requests.Session()
-        session.get("https://www.nseindia.com", headers=headers)
-        response = session.get(url, headers=headers, params={'index': 'equities', 'from_date': from_date, 'to_date': to_date})
+        session.get("https://www.nseindia.com", headers=HEADERS)
+        response = session.get(url, headers=HEADERS, params=params)
         
         if response.status_code == 200:
             return pd.DataFrame(response.json())
         return pd.DataFrame()
-    except:
+    except Exception as e:
+        print(f"Filings Error: {e}")
         return pd.DataFrame()
 
-def fetch_external_news():
-    """Scrapes Google News RSS for 'Order Wins' & 'L1 Bidder' news"""
-    print("Scanning External Trusted News...")
-    news_items = []
-    # Search queries for Indian Market context
-    queries = [
-        "NSE stock order win",
-        "company bag order contract India",
-        "company L1 bidder project India"
-    ]
-    
-    for q in queries:
-        encoded_q = q.replace(" ", "%20")
-        rss_url = f"https://news.google.com/rss/search?q={encoded_q}&hl=en-IN&gl=IN&ceid=IN:en"
-        feed = feedparser.parse(rss_url)
-        
-        for entry in feed.entries:
-            # Filter 1: Must be from a trusted domain
-            if any(domain in entry.link for domain in TRUSTED_DOMAINS):
-                # Filter 2: Must happen in last 24 hours
-                news_items.append({
-                    'Date': date.today().strftime('%Y-%m-%d'),
-                    'Symbol': "MARKET NEWS", # We don't know the symbol yet, will extraction in App or here
-                    'Type': 'External News (Potential)',
-                    'Headline': entry.title,
-                    'Sentiment': 'Positive', # Assumed based on query
-                    'Value_Cr': extract_deal_value(entry.title),
-                    'Details': f"Source: {entry.source.title} | Link: {entry.link}"
-                })
-    return pd.DataFrame(news_items)
-
 def scan_market():
-    clean_news = []
+    all_data = []
     
-    # 1. NSE FILINGS
-    df_nse = fetch_corporate_announcements()
-    if not df_nse.empty:
-        for _, row in df_nse.iterrows():
-            subject = (str(row.get('desc', '')) + " " + str(row.get('attchmntText', ''))).lower()
-            val = extract_deal_value(subject)
-            sent = analyze_sentiment(subject)
+    # 1. GET PAST/PRESENT NEWS (Filings)
+    df_filings = fetch_corporate_announcements()
+    if not df_filings.empty:
+        for _, row in df_filings.iterrows():
+            # Combine subject and details for better regex search
+            full_text = f"{row.get('desc', '')} {row.get('attchmntText', '')}"
+            val = extract_deal_value(full_text)
             
-            if sent != "Neutral" or val > 0:
-                clean_news.append({
-                    'Date': row.get('an_dt'), # Use ISO format if possible
-                    'Symbol': row.get('symbol'),
-                    'Type': 'Official Filing',
-                    'Headline': row.get('desc'),
-                    'Sentiment': sent,
-                    'Value_Cr': val,
-                    'Details': subject[:500]
-                })
+            # Auto-Sentiment
+            sent = "Neutral"
+            if val > 0 or any(x in full_text.lower() for x in ['order', 'bagged', 'awarded', 'bonus']):
+                sent = "Positive"
+            elif 'penalty' in full_text.lower() or 'fraud' in full_text.lower():
+                sent = "Negative"
+            
+            all_data.append({
+                'Date': row.get('an_dt'), # 2024-01-13
+                'Symbol': row.get('symbol'),
+                'Type': 'Official Filing',
+                'Headline': row.get('desc'),
+                'Sentiment': sent,
+                'Value_Cr': val,
+                'Details': full_text[:500]
+            })
 
-    # 2. EXTERNAL NEWS
-    df_ext = fetch_external_news()
-    if not df_ext.empty:
-        # Try to extract Symbol from Headline (Simple heuristic: All Caps words)
-        # In a real app, you'd match against a master list of symbols.
-        # Here we just append it.
-        clean_news.extend(df_ext.to_dict('records'))
+    # 2. GET FUTURE NEWS (Board Meetings)
+    df_meetings = fetch_board_meetings()
+    if not df_meetings.empty:
+        all_data.extend(df_meetings.to_dict('records'))
 
-    # 3. SAVE
-    if clean_news:
-        new_df = pd.DataFrame(clean_news)
+    # 3. SAVE DATA
+    if all_data:
+        new_df = pd.DataFrame(all_data)
+        # Handle date formatting uniformity
+        new_df['Date'] = pd.to_datetime(new_df['Date'], dayfirst=True, errors='coerce')
+        
         if os.path.exists(DATA_FILE):
             existing = pd.read_csv(DATA_FILE)
-            pd.concat([new_df, existing]).drop_duplicates(subset=['Headline']).head(500).to_csv(DATA_FILE, index=False)
+            existing['Date'] = pd.to_datetime(existing['Date'], errors='coerce')
+            combined = pd.concat([new_df, existing]).drop_duplicates(subset=['Date', 'Symbol', 'Headline'])
+            combined.to_csv(DATA_FILE, index=False)
         else:
             new_df.to_csv(DATA_FILE, index=False)
-        print("Data Updated Successfully.")
+        print(f"Saved {len(new_df)} new items.")
 
 if __name__ == "__main__":
     scan_market()
