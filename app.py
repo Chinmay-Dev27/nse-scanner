@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import yfinance as yf
+import altair as alt
 from datetime import datetime, timedelta
 
 # --- PAGE CONFIG ---
@@ -16,161 +17,145 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- TECHNICAL ANALYSIS ENGINE ---
+# --- CHART ENGINE (RESTORED) ---
 @st.cache_data(ttl=3600)
-def get_technicals(symbol):
-    """Calculates MACD, RSI, and SMA Verdicts"""
-    # CLEAN INPUT
+def get_stock_data(symbol):
+    """Fetches 1mo history for sparklines & technicals"""
     if not symbol or symbol in ["POTENTIAL NEWS", "MARKET NEWS"]: return None
-    symbol = symbol.strip().upper()
+    # CLEANER: Remove spaces again just in case
+    symbol = symbol.strip().replace(" ", "").upper()
     
-    # Validation
-    if len(symbol) > 15 or " " in symbol: return None
-
     try:
-        # Download Data (Ensure .NS suffix)
-        ticker = f"{symbol}.NS" if not symbol.endswith(".NS") else symbol
-        df = yf.download(ticker, period="1y", progress=False)
-        
+        ticker = f"{symbol}.NS"
+        df = yf.download(ticker, period="1mo", progress=False)
         if df.empty: return None
-        
+        return df
+    except: return None
+
+def make_sparkline(df):
+    """Creates the 7-day trend chart with Dynamic Scaling"""
+    if df is None or df.empty: return None
+    
+    # Prep Data
+    hist = df['Close'].tail(10).reset_index()
+    hist.columns = ['Date', 'Close']
+    
+    # Dynamic Scale (Min/Max)
+    min_p = hist['Close'].min() * 0.995
+    max_p = hist['Close'].max() * 1.005
+    
+    # Color Logic (Green if up, Red if down)
+    start = hist['Close'].iloc[0]
+    end = hist['Close'].iloc[-1]
+    line_color = '#28a745' if end >= start else '#dc3545'
+
+    chart = alt.Chart(hist).mark_line(color=line_color, strokeWidth=2).encode(
+        x=alt.X('Date', axis=None),
+        y=alt.Y('Close', scale=alt.Scale(domain=[min_p, max_p]), axis=None),
+        tooltip=['Date', 'Close']
+    ).properties(height=60, width=150)
+    
+    return chart
+
+def calculate_technicals(df):
+    """Returns verdict based on RSI/MACD"""
+    if df is None: return None
+    try:
         close = df['Close']
-        curr_price = float(close.iloc[-1])
-        
-        # Indicators
-        sma200 = close.rolling(window=200).mean().iloc[-1]
-        
-        # MACD
-        k = close.ewm(span=12, adjust=False).mean() - close.ewm(span=26, adjust=False).mean()
-        d = k.ewm(span=9, adjust=False).mean()
-        macd_val = k.iloc[-1]
-        signal_val = d.iloc[-1]
+        curr = float(close.iloc[-1])
         
         # RSI
         delta = close.diff()
-        gain = (delta.where(delta > 0, 0)).rolling(window=14).mean()
-        loss = (-delta.where(delta < 0, 0)).rolling(window=14).mean()
-        rs = gain / loss
-        rsi = 100 - (100 / (1 + rs)).iloc[-1]
+        gain = (delta.where(delta > 0, 0)).rolling(14).mean()
+        loss = (-delta.where(delta < 0, 0)).rolling(14).mean()
+        rs = gain/loss
+        rsi = 100 - (100/(1+rs)).iloc[-1]
         
-        # Verdict Logic
+        # MACD
+        k = close.ewm(span=12).mean() - close.ewm(span=26).mean()
+        d = k.ewm(span=9).mean()
+        macd = "Bullish" if k.iloc[-1] > d.iloc[-1] else "Bearish"
+        
         score = 0
-        if curr_price > sma200: score += 1
-        if macd_val > signal_val: score += 1
         if 40 < rsi < 70: score += 1
+        if macd == "Bullish": score += 1
         
         verdict = "NEUTRAL"
-        css_class = "verdict-neutral"
+        if score == 2: verdict = "BUY"
+        elif score == 0: verdict = "SELL"
         
-        if score == 3: 
-            verdict = "STRONG BUY"
-            css_class = "verdict-buy"
-        elif score == 2: 
-            verdict = "BUY"
-            css_class = "verdict-buy"
-        elif score == 0: 
-            verdict = "SELL"
-            css_class = "verdict-sell"
-        
-        return {
-            "Price": curr_price,
-            "SMA200": sma200,
-            "MACD": "Bullish" if macd_val > signal_val else "Bearish",
-            "RSI": round(rsi, 2),
-            "Verdict": verdict,
-            "Class": css_class,
-            "History": df['Close']
-        }
-    except:
-        return None
+        return {"Price": curr, "RSI": round(rsi,2), "MACD": macd, "Verdict": verdict}
+    except: return None
 
 # --- LOAD DATA ---
 try:
     df = pd.read_csv("nse_data.csv")
     df['Date'] = pd.to_datetime(df['Date'])
 except:
-    st.error("Data missing. Please wait for GitHub Action to complete.")
+    st.error("Data missing. Please wait for GitHub Action.")
     st.stop()
 
 # --- SIDEBAR FILTERS ---
 with st.sidebar:
     st.header("🔍 Filter Controls")
+    source = st.multiselect("Data Source", ["Official Filing", "Bulk Deal", "Future/Rumor"], default=["Official Filing", "Bulk Deal", "Future/Rumor"])
     
-    source_types = st.multiselect(
-        "Data Source", 
-        ["Official Filing", "Bulk Deal", "Future/Rumor"], 
-        default=["Official Filing", "Bulk Deal", "Future/Rumor"]
-    )
+    # RESTORED VALUE FILTER
+    show_all = st.checkbox("Show All Values", value=False)
+    min_val = 0 if show_all else st.number_input("Min Deal Value (Cr)", value=5.0, step=5.0)
     
-    # Deal Value Filter
-    show_all = st.checkbox("Show All Values (Ignore Filter)", value=True)
-    if not show_all:
-        min_val = st.number_input("Min Deal Value (Cr)", value=5.0, step=5.0)
-    else:
-        min_val = 0
-        
-    days = st.selectbox("Lookback Period", ["Last 24h", "Last 3 Days", "Last 30 Days"], index=1)
+    days = st.selectbox("Lookback", ["Last 24h", "Last 3 Days", "Last 30 Days"], index=1)
 
-# --- APPLY FILTERS ---
+# --- FILTER LOGIC ---
 d_map = {"Last 24h": 1, "Last 3 Days": 3, "Last 30 Days": 30}
 cutoff = datetime.now() - timedelta(days=d_map[days])
 
-# FIXED LOGIC: Always show 'Future/Rumor' even if value is 0
 mask = (
     (df['Date'] >= cutoff) & 
-    (df['Type'].isin(source_types)) & 
+    (df['Type'].isin(source)) & 
     ((df['Value_Cr'] >= min_val) | (df['Type'] == 'Future/Rumor')) 
 )
+filtered = df[mask].sort_values(by=['Value_Cr', 'Date'], ascending=[False, False])
 
-filtered_df = df[mask].sort_values(by=['Value_Cr', 'Date'], ascending=[False, False])
-
-# --- DASHBOARD LAYOUT ---
+# --- DASHBOARD ---
 st.title("🚀 NSE Sniper Pro")
-st.markdown(f"**{len(filtered_df)}** Opportunities Found")
+st.markdown(f"**{len(filtered)}** Opportunities Found")
 
-if filtered_df.empty:
+if filtered.empty:
     st.info("No deals found.")
 else:
-    for _, row in filtered_df.iterrows():
+    for _, row in filtered.iterrows():
+        # Get Data Once
+        stock_data = get_stock_data(row['Symbol'])
+        
         with st.container(border=True):
-            # Header
+            # ROW 1: Header + Value Badge
             c1, c2 = st.columns([3, 1])
             c1.subheader(f"{row['Symbol']}")
             c1.caption(f"{row['Date'].strftime('%d-%b')} | {row['Type']}")
-            
-            # Value Badge
             if row['Value_Cr'] > 0:
                 c2.markdown(f"### ₹ {row['Value_Cr']} Cr")
             
-            # Headline
-            st.write(f"**{row['Headline']}**")
-            
-            # UNIFIED EXPANDER: Details + Technicals
-            with st.expander("🔍 Analyze & Details"):
-                st.write(row['Details'])
-                
-                # Logic Check: Only run technicals if it's NOT a rumor
-                if row['Symbol'] not in ["POTENTIAL NEWS", "MARKET NEWS"]:
-                    st.divider()
-                    st.markdown("### 📊 Technical Snapshot")
-                    
-                    tech = get_technicals(row['Symbol'])
-                    
-                    if tech:
-                        # VERDICT ROW
-                        v1, v2 = st.columns([1, 3])
-                        v1.markdown(f"Verdict: <span class='{tech['Class']}'>{tech['Verdict']}</span>", unsafe_allow_html=True)
-                        v2.caption("Based on SMA200, MACD & RSI")
-                        
-                        # METRICS ROW
-                        k1, k2, k3 = st.columns(3)
-                        k1.metric("Price", f"₹ {tech['Price']:.2f}")
-                        k2.metric("RSI (14)", tech['RSI'])
-                        k3.metric("MACD", tech['MACD'])
-                        
-                        # CHART
-                        st.line_chart(tech['History'], height=250)
-                    else:
-                        st.warning(f"Could not load chart for {row['Symbol']}. (Might be a new listing or symbol mismatch)")
+            # ROW 2: Headline + Sparkline Chart
+            col_txt, col_chart = st.columns([2, 1])
+            with col_txt:
+                st.write(f"**{row['Headline']}**")
+            with col_chart:
+                if stock_data is not None:
+                    st.altair_chart(make_sparkline(stock_data), use_container_width=True)
                 else:
-                    st.caption("Technical analysis not available for generic/future news.")
+                    if row['Symbol'] not in ["POTENTIAL NEWS"]:
+                        st.caption("No Chart")
+            
+            # ROW 3: Expander with Technicals
+            with st.expander("🔍 Details & Analysis"):
+                st.write(row['Details'])
+                if stock_data is not None:
+                    st.divider()
+                    tech = calculate_technicals(stock_data)
+                    if tech:
+                        t1, t2, t3, t4 = st.columns(4)
+                        t1.metric("Price", f"₹{tech['Price']:.2f}")
+                        t2.metric("Verdict", tech['Verdict'])
+                        t3.metric("RSI", tech['RSI'])
+                        t4.metric("MACD", tech['MACD'])
