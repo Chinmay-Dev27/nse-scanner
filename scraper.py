@@ -9,15 +9,13 @@ import time
 
 # --- CONFIG ---
 DATA_FILE = "nse_data.csv"
-HEADERS = {'User-Agent': 'Mozilla/5.0'}
+HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
 
 def extract_deal_value(text):
     if not isinstance(text, str): return 0
     text = text.lower().replace(',', '')
-    # Match Cr/Crore
     match_cr = re.search(r"(?:rs\.?|inr)?\s?(\d+(?:\.\d+)?)\s?(?:cr|crore)", text)
     if match_cr: return float(match_cr.group(1))
-    # Match Million (convert to Cr)
     match_mn = re.search(r"(\d+(?:\.\d+)?)\s?(?:mn|million)", text)
     if match_mn: return round(float(match_mn.group(1)) * 0.1, 2)
     return 0
@@ -27,24 +25,27 @@ def clean_symbol(sym):
     return sym.strip().replace(" ", "").upper()
 
 def fetch_future_events():
-    print("Scanning Future Events...")
+    print("Scanning Future Events & Rumors...")
     events = []
-    # BROADENED QUERIES to ensure hits
+    # BROADENED QUERIES (As per your request)
     queries = [
-        "company L1 bidder project India", 
-        "company lowest bidder order", 
+        "Order win", 
+        "Acquisition", 
+        "Stake sale", 
         "company bag order contract India",
-        "company in talks acquisition India",
-        "merger discussions India company",
-        "company stake sale India",
-        "NSE listed company new order"
+        "company lowest bidder order",
+        "merger talks India",
+        "share buyback India",
+        "bonus issue India"
     ]
     
     for q in queries:
         try:
+            # Search Google News RSS
             url = f"https://news.google.com/rss/search?q={q.replace(' ','%20')}&hl=en-IN&gl=IN&ceid=IN:en"
             feed = feedparser.parse(url)
-            # Take top 2 from each query to avoid spam
+            
+            # Take Top 2 entries per query to prevent overload
             for entry in feed.entries[:2]:
                 events.append({
                     'Date': date.today().strftime('%Y-%m-%d'),
@@ -57,30 +58,32 @@ def fetch_future_events():
                 })
         except: continue
     
-    # Remove duplicates based on headline
-    df = pd.DataFrame(events)
-    if not df.empty:
+    # Deduplicate by Headline
+    if events:
+        df = pd.DataFrame(events)
         df = df.drop_duplicates(subset=['Headline'])
-    return df
+        return df
+    return pd.DataFrame(events)
 
 def fetch_bulk_deals_robust():
-    """Fetches Bulk Deals in small chunks to avoid API failure"""
-    print("Fetching Bulk Deals (Chunked)...")
+    """
+    Fetches Bulk Deals Day-by-Day.
+    This is slower but fixes the 'Empty Data' API error.
+    """
+    print("Fetching Bulk Deals (Day-by-Day Loop)...")
     all_deals = []
     
-    # Scan last 15 days in 3-day chunks (Reliable method)
-    for i in range(0, 15, 3):
+    # Scan last 7 days individually
+    for i in range(7):
+        target_date = date.today() - timedelta(days=i)
+        date_str = target_date.strftime('%d-%m-%Y')
+        
         try:
-            end = date.today() - timedelta(days=i)
-            start = end - timedelta(days=2)
-            
-            # Skip if start date is in future (edge case)
-            if start > date.today(): continue
-
-            bd = capital_market.bulk_deal_data(from_date=start.strftime('%d-%m-%Y'), 
-                                               to_date=end.strftime('%d-%m-%Y'))
+            # Request specific day only
+            bd = capital_market.bulk_deal_data(from_date=date_str, to_date=date_str)
             
             if bd is not None and not bd.empty:
+                # Normalize Columns
                 bd.columns = [c.strip() for c in bd.columns]
                 bd.rename(columns={'Quantity Traded': 'Quantity', 'Trade Price / Wght. Avg. Price': 'Trade Price'}, inplace=True)
                 
@@ -99,9 +102,10 @@ def fetch_bulk_deals_robust():
                             'Value_Cr': round(val, 2), 
                             'Details': f"Client: {row['Client Name']}"
                         })
-            time.sleep(0.5) # Polite delay
-        except Exception as e:
-            print(f"Chunk failed: {e}")
+            time.sleep(0.5) # Prevent Rate Limiting
+            
+        except Exception:
+            # If one day fails (e.g., Weekend), just skip to next
             continue
             
     return pd.DataFrame(all_deals)
@@ -109,7 +113,7 @@ def fetch_bulk_deals_robust():
 def scan_market():
     all_data = []
 
-    # 1. BULK DEALS (New Robust Function)
+    # 1. BULK DEALS (Updated Logic)
     df_bd = fetch_bulk_deals_robust()
     if not df_bd.empty:
         all_data.extend(df_bd.to_dict('records'))
@@ -117,7 +121,7 @@ def scan_market():
     # 2. OFFICIAL FILINGS
     print("Fetching Filings...")
     try:
-        from_d = (date.today() - timedelta(days=5)).strftime('%d-%m-%Y')
+        from_d = (date.today() - timedelta(days=3)).strftime('%d-%m-%Y')
         to_d = date.today().strftime('%d-%m-%Y')
         url = "https://www.nseindia.com/api/corporate-announcements"
         s = requests.Session(); s.get("https://www.nseindia.com", headers=HEADERS)
@@ -139,7 +143,7 @@ def scan_market():
                     })
     except Exception as e: print(f"Filing Err: {e}")
 
-    # 3. FUTURE EVENTS
+    # 3. FUTURE EVENTS (Updated Logic)
     df_future = fetch_future_events()
     if not df_future.empty: all_data.extend(df_future.to_dict('records'))
 
