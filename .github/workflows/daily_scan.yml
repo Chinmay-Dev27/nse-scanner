@@ -1,0 +1,38 @@
+name: Daily NSE Scanner
+
+on:
+  schedule:
+    # Runs at 12:00 UTC (5:30 PM IST) every day
+    - cron: '0 12 * * *'
+  workflow_dispatch: # Allows you to click a button to run it manually
+
+permissions:
+  contents: write
+
+jobs:
+  run-scanner:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run Scanner Script
+        run: python scraper.py
+
+      - name: Commit and Push Data
+        run: |
+          git config --global user.name "NSE Scanner Bot"
+          git config --global user.email "bot@noreply.github.com"
+          git add nse_data.csv
+          git commit -m "Auto-update: Daily Stock Scan Results" || echo "No changes to commit"
+          git push
