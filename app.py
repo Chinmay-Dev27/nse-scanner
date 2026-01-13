@@ -10,8 +10,9 @@ st.set_page_config(page_title="NSE Sniper Pro", layout="wide", page_icon="🚀")
 st.markdown("""
 <style>
     .metric-box { border-left: 5px solid #007bff; background-color: #f0f2f6; padding: 10px; border-radius: 5px; }
-    .verdict-buy { color: #28a745; font-weight: bold; }
-    .verdict-sell { color: #dc3545; font-weight: bold; }
+    .verdict-buy { color: #28a745; font-weight: bold; background-color: #d4edda; padding: 2px 6px; border-radius: 4px; }
+    .verdict-sell { color: #dc3545; font-weight: bold; background-color: #f8d7da; padding: 2px 6px; border-radius: 4px; }
+    .verdict-neutral { color: #6c757d; font-weight: bold; background-color: #e2e3e5; padding: 2px 6px; border-radius: 4px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -19,17 +20,15 @@ st.markdown("""
 @st.cache_data(ttl=3600)
 def get_technicals(symbol):
     """Calculates MACD, RSI, and SMA Verdicts"""
-    # 1. SKIP INVALID SYMBOLS (Fixes "Generic News" Error)
-    if not symbol or symbol in ["POTENTIAL NEWS", "MARKET NEWS"]: 
-        return None
+    # CLEAN INPUT
+    if not symbol or symbol in ["POTENTIAL NEWS", "MARKET NEWS"]: return None
+    symbol = symbol.strip().upper()
     
-    # 2. SKIP IF SYMBOL IS TOO LONG (Likely a sentence, not a ticker)
-    if len(symbol) > 15 or " " in symbol: 
-        return None
+    # Validation
+    if len(symbol) > 15 or " " in symbol: return None
 
     try:
-        # Download 1 Year Data
-        # Added .NS suffix for NSE, but check if it already has it
+        # Download Data (Ensure .NS suffix)
         ticker = f"{symbol}.NS" if not symbol.endswith(".NS") else symbol
         df = yf.download(ticker, period="1y", progress=False)
         
@@ -54,16 +53,24 @@ def get_technicals(symbol):
         rs = gain / loss
         rsi = 100 - (100 / (1 + rs)).iloc[-1]
         
-        # Verdict
+        # Verdict Logic
         score = 0
         if curr_price > sma200: score += 1
         if macd_val > signal_val: score += 1
         if 40 < rsi < 70: score += 1
         
-        verdict = "NEUTRAL ⚪"
-        if score == 3: verdict = "STRONG BUY 🟢"
-        elif score == 2: verdict = "BUY 🟢"
-        elif score == 0: verdict = "SELL 🔴"
+        verdict = "NEUTRAL"
+        css_class = "verdict-neutral"
+        
+        if score == 3: 
+            verdict = "STRONG BUY"
+            css_class = "verdict-buy"
+        elif score == 2: 
+            verdict = "BUY"
+            css_class = "verdict-buy"
+        elif score == 0: 
+            verdict = "SELL"
+            css_class = "verdict-sell"
         
         return {
             "Price": curr_price,
@@ -71,6 +78,7 @@ def get_technicals(symbol):
             "MACD": "Bullish" if macd_val > signal_val else "Bearish",
             "RSI": round(rsi, 2),
             "Verdict": verdict,
+            "Class": css_class,
             "History": df['Close']
         }
     except:
@@ -95,7 +103,7 @@ with st.sidebar:
     )
     
     # Deal Value Filter
-    show_all = st.checkbox("Show All Values (Ignore Filter)", value=True) # CHANGED DEFAULT TO TRUE
+    show_all = st.checkbox("Show All Values (Ignore Filter)", value=True)
     if not show_all:
         min_val = st.number_input("Min Deal Value (Cr)", value=5.0, step=5.0)
     else:
@@ -107,8 +115,7 @@ with st.sidebar:
 d_map = {"Last 24h": 1, "Last 3 Days": 3, "Last 30 Days": 30}
 cutoff = datetime.now() - timedelta(days=d_map[days])
 
-# LOGIC FIX: If type is 'Future/Rumor', IGNORE the Deal Value filter
-# (Because rumors often have Value=0 but are still important)
+# FIXED LOGIC: Always show 'Future/Rumor' even if value is 0
 mask = (
     (df['Date'] >= cutoff) & 
     (df['Type'].isin(source_types)) & 
@@ -121,60 +128,49 @@ filtered_df = df[mask].sort_values(by=['Value_Cr', 'Date'], ascending=[False, Fa
 st.title("🚀 NSE Sniper Pro")
 st.markdown(f"**{len(filtered_df)}** Opportunities Found")
 
-tab_news, tab_tech = st.tabs(["📰 News & Deals", "📊 Technical Analysis"])
-
-with tab_news:
-    if filtered_df.empty:
-        st.info("No deals found.")
-    else:
-        for _, row in filtered_df.iterrows():
-            with st.container(border=True):
-                # Header
-                c1, c2 = st.columns([3, 1])
-                c1.subheader(f"{row['Symbol']}")
-                c1.caption(f"{row['Date'].strftime('%d-%b')} | {row['Type']}")
+if filtered_df.empty:
+    st.info("No deals found.")
+else:
+    for _, row in filtered_df.iterrows():
+        with st.container(border=True):
+            # Header
+            c1, c2 = st.columns([3, 1])
+            c1.subheader(f"{row['Symbol']}")
+            c1.caption(f"{row['Date'].strftime('%d-%b')} | {row['Type']}")
+            
+            # Value Badge
+            if row['Value_Cr'] > 0:
+                c2.markdown(f"### ₹ {row['Value_Cr']} Cr")
+            
+            # Headline
+            st.write(f"**{row['Headline']}**")
+            
+            # UNIFIED EXPANDER: Details + Technicals
+            with st.expander("🔍 Analyze & Details"):
+                st.write(row['Details'])
                 
-                # Value Badge
-                if row['Value_Cr'] > 0:
-                    c2.markdown(f"### ₹ {row['Value_Cr']} Cr")
-                
-                # Headline
-                st.write(f"**{row['Headline']}**")
-                
-                # Expander
-                with st.expander("📄 Details & Analysis"):
-                    st.write(row['Details'])
+                # Logic Check: Only run technicals if it's NOT a rumor
+                if row['Symbol'] not in ["POTENTIAL NEWS", "MARKET NEWS"]:
+                    st.divider()
+                    st.markdown("### 📊 Technical Snapshot")
                     
-                    # Logic Check: Only run technicals if it's NOT a rumor
-                    if row['Symbol'] not in ["POTENTIAL NEWS", "MARKET NEWS"]:
-                        st.divider()
-                        tech = get_technicals(row['Symbol'])
-                        if tech:
-                            st.markdown(f"**Analyst Verdict:** {tech['Verdict']}")
-                            st.caption(f"Price: ₹{tech['Price']:.2f} | RSI: {tech['RSI']} | MACD: {tech['MACD']}")
-                        else:
-                            st.caption("Technical data unavailable for this ticker.")
+                    tech = get_technicals(row['Symbol'])
+                    
+                    if tech:
+                        # VERDICT ROW
+                        v1, v2 = st.columns([1, 3])
+                        v1.markdown(f"Verdict: <span class='{tech['Class']}'>{tech['Verdict']}</span>", unsafe_allow_html=True)
+                        v2.caption("Based on SMA200, MACD & RSI")
+                        
+                        # METRICS ROW
+                        k1, k2, k3 = st.columns(3)
+                        k1.metric("Price", f"₹ {tech['Price']:.2f}")
+                        k2.metric("RSI (14)", tech['RSI'])
+                        k3.metric("MACD", tech['MACD'])
+                        
+                        # CHART
+                        st.line_chart(tech['History'], height=250)
                     else:
-                        st.caption("Technical analysis not available for generic/future news.")
-
-with tab_tech:
-    st.markdown("### 📈 Deep Dive Technicals")
-    # Filter out "POTENTIAL NEWS" from the dropdown list
-    clean_list = filtered_df[~filtered_df['Symbol'].isin(["POTENTIAL NEWS", "MARKET NEWS"])]['Symbol'].unique()
-    
-    if len(clean_list) == 0:
-        st.warning("No valid stock symbols found in current list.")
-    else:
-        selected_stock = st.selectbox("Select Stock", clean_list)
-        
-        if selected_stock:
-            tech_data = get_technicals(selected_stock)
-            if tech_data:
-                st.info(f"VERDICT: {tech_data['Verdict']}")
-                k1, k2, k3 = st.columns(3)
-                k1.metric("Price", f"₹ {tech_data['Price']:.2f}")
-                k2.metric("RSI", tech_data['RSI'])
-                k3.metric("MACD", tech_data['MACD'])
-                st.line_chart(tech_data['History'])
-            else:
-                st.warning("Could not load chart.")
+                        st.warning(f"Could not load chart for {row['Symbol']}. (Might be a new listing or symbol mismatch)")
+                else:
+                    st.caption("Technical analysis not available for generic/future news.")
