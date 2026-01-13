@@ -10,11 +10,9 @@ st.set_page_config(page_title="NSE Sniper Pro", layout="wide", page_icon="🎯")
 # --- CUSTOM CSS (Formatting Fixes) ---
 st.markdown("""
 <style>
-    /* Metric styling */
-    div[data-testid="stMetricValue"] { font-size: 1.1rem; }
-    
-    /* Prevent text truncation */
-    .stMarkdown p { white-space: normal; word-wrap: break-word; }
+    /* Prevent text truncation in metrics and tables */
+    div[data-testid="stMetricValue"] { font-size: 1.2rem; white-space: normal !important; }
+    p { white-space: normal !important; }
     
     /* Verdict badges */
     .verdict-strong-buy { background-color: #28a745; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
@@ -27,7 +25,7 @@ st.markdown("""
 # --- TECHNICAL ENGINE ---
 @st.cache_data(ttl=3600)
 def get_full_analysis(symbol):
-    """Calculates Indicators (MACD, RSI, Vol)"""
+    """Calculates Indicators (MACD, RSI, Vol) and Crossovers"""
     if not symbol or symbol in ["POTENTIAL NEWS", "MARKET NEWS"]: return None
     symbol = symbol.strip().replace(" ", "").upper()
     
@@ -51,18 +49,23 @@ def get_full_analysis(symbol):
         d = k.ewm(span=9).mean()
         macd = "Bullish" if k.iloc[-1] > d.iloc[-1] else "Bearish"
         
-        # SMA
+        # SMA & Crossover
         sma200 = close.rolling(200).mean().iloc[-1]
         sma50 = close.rolling(50).mean().iloc[-1]
         
+        crossover = "Neutral"
+        if sma50 > sma200: crossover = "Golden Cross (Bullish)"
+        elif sma50 < sma200: crossover = "Death Cross (Bearish)"
+        
         # Volume
-        vol_spike = "Yes" if df['Volume'].iloc[-1] > (1.5 * df['Volume'].rolling(20).mean().iloc[-1]) else "Normal"
+        vol_avg = df['Volume'].rolling(20).mean().iloc[-1]
+        vol_spike = "High" if df['Volume'].iloc[-1] > (1.5 * vol_avg) else "Normal"
 
         # PE (Graceful Fallback)
-        try: pe = round(ticker.info.get('trailingPE', 0), 2)
-        except: pe = "N/A"
+        try: pe = ticker.info.get('trailingPE', 0)
+        except: pe = 0
 
-        # Verdict
+        # Verdict Logic
         score = 0
         if curr_price > sma200: score += 1
         if macd == "Bullish": score += 1
@@ -76,21 +79,21 @@ def get_full_analysis(symbol):
 
         return {
             "History": df, "Price": curr_price, "RSI": rsi, "MACD": macd,
-            "SMA_Cross": "Golden" if sma50 > sma200 else "Death", "PE": pe,
+            "Crossover": crossover, "PE": pe,
             "Volume": vol_spike, "Verdict": verdict, "Class": v_class
         }
     except: return None
 
 def make_interactive_chart(df):
-    data = df.tail(60).reset_index()
+    data = df.tail(90).reset_index()
     data.columns = ['Date', 'Open', 'High', 'Low', 'Close', 'Volume', 'Dividends', 'Stock Splits']
     min_p, max_p = data['Close'].min() * 0.98, data['Close'].max() * 1.02
     
     chart = alt.Chart(data).mark_line(point=True).encode(
         x=alt.X('Date:T', axis=alt.Axis(format='%d %b', title='Date')),
-        y=alt.Y('Close:Q', scale=alt.Scale(domain=[min_p, max_p]), title='Price'),
-        tooltip=['Date:T', alt.Tooltip('Close', format=',.2f')]
-    ).properties(height=250, width='container').interactive()
+        y=alt.Y('Close:Q', scale=alt.Scale(domain=[min_p, max_p]), title='Price (₹)'),
+        tooltip=['Date:T', alt.Tooltip('Close', format=',.2f'), 'Volume']
+    ).properties(height=300, width='container').interactive()
     return chart
 
 # --- LOAD DATA ---
@@ -98,7 +101,7 @@ try:
     df = pd.read_csv("nse_data.csv")
     df['Date'] = pd.to_datetime(df['Date'])
 except:
-    st.error("Data missing. Please wait for the scanner to run.")
+    st.error("Data missing. Please run the scanner.")
     st.stop()
 
 # --- FILTERS ---
@@ -124,7 +127,7 @@ st.title("🎯 NSE Sniper Pro")
 st.markdown(f"Found **{len(filtered)}** Actionable Signals")
 
 if filtered.empty:
-    st.info("No stocks match your filters.")
+    st.info("No stocks match your filters. Try checking 'Show All Values'.")
 else:
     for _, row in filtered.iterrows():
         with st.container(border=True):
@@ -133,7 +136,7 @@ else:
             c1.subheader(f"{row['Symbol']}")
             c1.caption(f"{row['Date'].strftime('%d-%b-%Y')} | {row['Type']}")
             if row['Value_Cr'] > 0:
-                c2.markdown(f"### ₹ {row['Value_Cr']:.2f} Cr") # Forced 2 decimals
+                c2.markdown(f"### ₹ {row['Value_Cr']:.2f} Cr") # Fixed 2 decimals
             
             # CONTENT
             st.write(f"**{row['Headline']}**")
@@ -150,11 +153,17 @@ else:
                     if tech:
                         st.markdown(f"#### Verdict: <span class='{tech['Class']}'>{tech['Verdict']}</span>", unsafe_allow_html=True)
                         
+                        # ROW 1: Price & Momentum
                         m1, m2, m3, m4 = st.columns(4)
                         m1.metric("Price", f"₹ {tech['Price']:.2f}")
-                        m2.metric("RSI (14)", f"{tech['RSI']:.2f}")
-                        m3.metric("MACD", tech['MACD'])
-                        m4.metric("PE Ratio", f"{tech['PE']}")
+                        m2.metric("RSI (14)", f"{tech['RSI']:.2f}", help="Over 70=Overbought, Under 30=Oversold")
+                        m3.metric("MACD", tech['MACD'], help="Bullish = Buying Momentum")
+                        m4.metric("PE Ratio", f"{tech['PE']:.2f}")
+                        
+                        # ROW 2: Trend & Crossover (Restored)
+                        m5, m6, m7 = st.columns(3)
+                        m5.metric("Crossover", tech['Crossover'], help="Golden Cross = Bullish Signal")
+                        m6.metric("Volume Spike", tech['Volume'], help="High volume confirms the move")
                         
                         st.markdown("#### Price Action (3 Months)")
                         st.altair_chart(make_interactive_chart(tech['History']), use_container_width=True)
