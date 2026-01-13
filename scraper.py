@@ -14,8 +14,10 @@ HEADERS = {'User-Agent': 'Mozilla/5.0'}
 def extract_deal_value(text):
     if not isinstance(text, str): return 0
     text = text.lower().replace(',', '')
+    # Match Cr/Crore
     match_cr = re.search(r"(?:rs\.?|inr)?\s?(\d+(?:\.\d+)?)\s?(?:cr|crore)", text)
     if match_cr: return float(match_cr.group(1))
+    # Match Million (convert to Cr)
     match_mn = re.search(r"(\d+(?:\.\d+)?)\s?(?:mn|million)", text)
     if match_mn: return round(float(match_mn.group(1)) * 0.1, 2)
     return 0
@@ -31,15 +33,19 @@ def fetch_future_events():
     queries = [
         "company L1 bidder project India", 
         "company lowest bidder order", 
+        "company bag order contract India",
         "company in talks acquisition India",
-        "company considering stake sale India",
-        "merger discussions India company"
+        "merger discussions India company",
+        "company stake sale India",
+        "NSE listed company new order"
     ]
+    
     for q in queries:
         try:
             url = f"https://news.google.com/rss/search?q={q.replace(' ','%20')}&hl=en-IN&gl=IN&ceid=IN:en"
             feed = feedparser.parse(url)
-            for entry in feed.entries[:3]:
+            # Take top 2 from each query to avoid spam
+            for entry in feed.entries[:2]:
                 events.append({
                     'Date': date.today().strftime('%Y-%m-%d'),
                     'Symbol': "POTENTIAL NEWS",
@@ -50,19 +56,27 @@ def fetch_future_events():
                     'Details': f"Source: {entry.source.title} | Link: {entry.link}"
                 })
         except: continue
-    return pd.DataFrame(events)
+    
+    # Remove duplicates based on headline
+    df = pd.DataFrame(events)
+    if not df.empty:
+        df = df.drop_duplicates(subset=['Headline'])
+    return df
 
 def fetch_bulk_deals_robust():
     """Fetches Bulk Deals in small chunks to avoid API failure"""
     print("Fetching Bulk Deals (Chunked)...")
     all_deals = []
     
-    # Scan last 10 days in 2-day chunks
-    for i in range(0, 10, 2):
+    # Scan last 15 days in 3-day chunks (Reliable method)
+    for i in range(0, 15, 3):
         try:
             end = date.today() - timedelta(days=i)
-            start = end - timedelta(days=1)
+            start = end - timedelta(days=2)
             
+            # Skip if start date is in future (edge case)
+            if start > date.today(): continue
+
             bd = capital_market.bulk_deal_data(from_date=start.strftime('%d-%m-%Y'), 
                                                to_date=end.strftime('%d-%m-%Y'))
             
@@ -85,7 +99,7 @@ def fetch_bulk_deals_robust():
                             'Value_Cr': round(val, 2), 
                             'Details': f"Client: {row['Client Name']}"
                         })
-            time.sleep(1) # Polite delay
+            time.sleep(0.5) # Polite delay
         except Exception as e:
             print(f"Chunk failed: {e}")
             continue
@@ -103,7 +117,7 @@ def scan_market():
     # 2. OFFICIAL FILINGS
     print("Fetching Filings...")
     try:
-        from_d = (date.today() - timedelta(days=3)).strftime('%d-%m-%Y')
+        from_d = (date.today() - timedelta(days=5)).strftime('%d-%m-%Y')
         to_d = date.today().strftime('%d-%m-%Y')
         url = "https://www.nseindia.com/api/corporate-announcements"
         s = requests.Session(); s.get("https://www.nseindia.com", headers=HEADERS)
