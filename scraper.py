@@ -23,7 +23,6 @@ def fetch_future_events():
     """Scans Google News for rumors/upcoming deals"""
     print("Scanning Future Events...")
     events = []
-    # Broadened queries to ensure data
     queries = [
         "company L1 bidder project India", 
         "company lowest bidder order", 
@@ -35,11 +34,10 @@ def fetch_future_events():
         try:
             url = f"https://news.google.com/rss/search?q={q.replace(' ','%20')}&hl=en-IN&gl=IN&ceid=IN:en"
             feed = feedparser.parse(url)
-            # Take top 3 from each query
             for entry in feed.entries[:3]:
                 events.append({
                     'Date': date.today().strftime('%Y-%m-%d'),
-                    'Symbol': "POTENTIAL NEWS", # Explicit tag for App to recognize
+                    'Symbol': "POTENTIAL NEWS",
                     'Type': 'Future/Rumor',
                     'Headline': entry.title,
                     'Sentiment': 'Positive',
@@ -70,8 +68,11 @@ def scan_market():
                         qty = float(str(row['Quantity']).replace(',', ''))
                         price = float(str(row['Trade Price']).replace(',', ''))
                         val = (qty * price) / 10000000
+                        # CLEAN SYMBOL
+                        sym = str(row['Symbol']).strip().upper()
+                        
                         all_data.append({
-                            'Date': row['Date'], 'Symbol': row['Symbol'], 'Type': 'Bulk Deal',
+                            'Date': row['Date'], 'Symbol': sym, 'Type': 'Bulk Deal',
                             'Headline': f"Bulk {row['Buy/Sell']}: {qty:.0f} sh @ {price}",
                             'Sentiment': 'Positive' if row['Buy/Sell']=='BUY' else 'Negative',
                             'Value_Cr': round(val, 2), 'Details': f"Client: {row['Client Name']}"
@@ -93,8 +94,11 @@ def scan_market():
                 desc = (str(item.get('desc','')) + " " + str(item.get('attchmntText',''))).lower()
                 val = extract_deal_value(desc)
                 if val > 0 or any(x in desc for x in ['order', 'contract', 'bagged', 'bonus', 'acquisition']):
+                    # CLEAN SYMBOL
+                    sym = str(item.get('symbol')).strip().upper()
+                    
                     all_data.append({
-                        'Date': item.get('an_dt'), 'Symbol': item.get('symbol'), 'Type': 'Official Filing',
+                        'Date': item.get('an_dt'), 'Symbol': sym, 'Type': 'Official Filing',
                         'Headline': item.get('desc'),
                         'Sentiment': 'Positive' if 'order' in desc else 'Neutral',
                         'Value_Cr': val, 'Details': desc[:500]
