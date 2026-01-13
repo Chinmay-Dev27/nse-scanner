@@ -19,17 +19,19 @@ def extract_deal_value(text):
     if match_mn: return round(float(match_mn.group(1)) * 0.1, 2)
     return 0
 
+def clean_symbol(sym):
+    """Removes spaces and invalid characters to fix Chart Loading errors"""
+    if not isinstance(sym, str): return "UNKNOWN"
+    return sym.strip().replace(" ", "").upper()
+
 def fetch_future_events():
-    """Scans Google News for rumors/upcoming deals"""
     print("Scanning Future Events...")
     events = []
     queries = [
         "company L1 bidder project India", 
         "company lowest bidder order", 
-        "company bag order contract India",
-        "company in talks acquisition India"
+        "company bag order contract India"
     ]
-    
     for q in queries:
         try:
             url = f"https://news.google.com/rss/search?q={q.replace(' ','%20')}&hl=en-IN&gl=IN&ceid=IN:en"
@@ -44,8 +46,7 @@ def fetch_future_events():
                     'Value_Cr': extract_deal_value(entry.title),
                     'Details': f"Source: {entry.source.title} | Link: {entry.link}"
                 })
-        except:
-            continue
+        except: continue
     return pd.DataFrame(events)
 
 def scan_market():
@@ -68,14 +69,15 @@ def scan_market():
                         qty = float(str(row['Quantity']).replace(',', ''))
                         price = float(str(row['Trade Price']).replace(',', ''))
                         val = (qty * price) / 10000000
-                        # CLEAN SYMBOL
-                        sym = str(row['Symbol']).strip().upper()
                         
                         all_data.append({
-                            'Date': row['Date'], 'Symbol': sym, 'Type': 'Bulk Deal',
+                            'Date': row['Date'], 
+                            'Symbol': clean_symbol(row['Symbol']), 
+                            'Type': 'Bulk Deal',
                             'Headline': f"Bulk {row['Buy/Sell']}: {qty:.0f} sh @ {price}",
                             'Sentiment': 'Positive' if row['Buy/Sell']=='BUY' else 'Negative',
-                            'Value_Cr': round(val, 2), 'Details': f"Client: {row['Client Name']}"
+                            'Value_Cr': round(val, 2), 
+                            'Details': f"Client: {row['Client Name']}"
                         })
                     except: continue
     except Exception as e: print(f"Bulk Deal Err: {e}")
@@ -94,14 +96,14 @@ def scan_market():
                 desc = (str(item.get('desc','')) + " " + str(item.get('attchmntText',''))).lower()
                 val = extract_deal_value(desc)
                 if val > 0 or any(x in desc for x in ['order', 'contract', 'bagged', 'bonus', 'acquisition']):
-                    # CLEAN SYMBOL
-                    sym = str(item.get('symbol')).strip().upper()
-                    
                     all_data.append({
-                        'Date': item.get('an_dt'), 'Symbol': sym, 'Type': 'Official Filing',
+                        'Date': item.get('an_dt'), 
+                        'Symbol': clean_symbol(item.get('symbol')), 
+                        'Type': 'Official Filing',
                         'Headline': item.get('desc'),
                         'Sentiment': 'Positive' if 'order' in desc else 'Neutral',
-                        'Value_Cr': val, 'Details': desc[:500]
+                        'Value_Cr': val, 
+                        'Details': desc[:500]
                     })
     except Exception as e: print(f"Filing Err: {e}")
 
