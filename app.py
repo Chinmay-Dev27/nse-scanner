@@ -7,12 +7,12 @@ from datetime import datetime, timedelta
 # --- PAGE CONFIG ---
 st.set_page_config(page_title="NSE Sniper Pro", layout="wide", page_icon="🎯")
 
-# --- CUSTOM CSS (Formatting Fixes) ---
+# --- CUSTOM CSS ---
 st.markdown("""
 <style>
-    /* Prevent text truncation in metrics and tables */
-    div[data-testid="stMetricValue"] { font-size: 1.2rem; white-space: normal !important; }
-    p { white-space: normal !important; }
+    /* Metric styling: Fix decimals and font size */
+    div[data-testid="stMetricValue"] { font-size: 1.15rem; white-space: normal !important; }
+    p { white-space: normal !important; word-wrap: break-word; }
     
     /* Verdict badges */
     .verdict-strong-buy { background-color: #28a745; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
@@ -25,7 +25,7 @@ st.markdown("""
 # --- TECHNICAL ENGINE ---
 @st.cache_data(ttl=3600)
 def get_full_analysis(symbol):
-    """Calculates Indicators (MACD, RSI, Vol) and Crossovers"""
+    """Calculates Indicators (MACD, RSI, Vol)"""
     if not symbol or symbol in ["POTENTIAL NEWS", "MARKET NEWS"]: return None
     symbol = symbol.strip().replace(" ", "").upper()
     
@@ -54,8 +54,8 @@ def get_full_analysis(symbol):
         sma50 = close.rolling(50).mean().iloc[-1]
         
         crossover = "Neutral"
-        if sma50 > sma200: crossover = "Golden Cross (Bullish)"
-        elif sma50 < sma200: crossover = "Death Cross (Bearish)"
+        if sma50 > sma200: crossover = "Golden Cross"
+        elif sma50 < sma200: crossover = "Death Cross"
         
         # Volume
         vol_avg = df['Volume'].rolling(20).mean().iloc[-1]
@@ -136,7 +136,7 @@ else:
             c1.subheader(f"{row['Symbol']}")
             c1.caption(f"{row['Date'].strftime('%d-%b-%Y')} | {row['Type']}")
             if row['Value_Cr'] > 0:
-                c2.markdown(f"### ₹ {row['Value_Cr']:.2f} Cr") # Fixed 2 decimals
+                c2.markdown(f"### ₹ {row['Value_Cr']:.2f} Cr")
             
             # CONTENT
             st.write(f"**{row['Headline']}**")
@@ -160,10 +160,10 @@ else:
                         m3.metric("MACD", tech['MACD'], help="Bullish = Buying Momentum")
                         m4.metric("PE Ratio", f"{tech['PE']:.2f}")
                         
-                        # ROW 2: Trend & Crossover (Restored)
+                        # ROW 2: Trend & Crossover
                         m5, m6, m7 = st.columns(3)
-                        m5.metric("Crossover", tech['Crossover'], help="Golden Cross = Bullish Signal")
-                        m6.metric("Volume Spike", tech['Volume'], help="High volume confirms the move")
+                        m5.metric("Crossover", tech['Crossover'], help="Golden Cross = Bullish")
+                        m6.metric("Volume Spike", tech['Volume'], help="Spike > 1.5x Avg Volume")
                         
                         st.markdown("#### Price Action (3 Months)")
                         st.altair_chart(make_interactive_chart(tech['History']), use_container_width=True)
