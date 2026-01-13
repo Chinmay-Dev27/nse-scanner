@@ -3,3 +3,4 @@ requests
 streamlit
 nselib
 openpyxl
+yfinance
