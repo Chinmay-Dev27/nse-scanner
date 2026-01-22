@@ -4,4 +4,4 @@ streamlit
 nselib
 yfinance
 feedparser
-altair
+altair<5
